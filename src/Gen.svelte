@@ -37,19 +37,16 @@
     />
   </div>
   {name}
-  <!-- <br />
-  {gen} / {size} -->
   <Popover class="w-64 text-sm " title={name} triggeredBy="#id{id}">
     {#if gen >= 0}
       Generating: {gen} MW
     {:else}
       Pumping: {-gen} MW
     {/if}
-    <br />Capacity: {size}
+    <!-- <br />Capacity: {size} -->
+    <br />Turbines: {turbines} x {turbineSize} MW
     <br />Head: {head} m
-    <br />Turbines: {turbines}
-    <br />Turbine size: {turbineSize} MW
-    <br />Max Flow: {maxFlow} m^3/s
+    <br />Reg Max Flow: {maxFlow} m^3/s
     <br />Water Flow: {calcFlow} m^3/s
     <br />Water Flow: {calcFlowML} ML/h
   </Popover>

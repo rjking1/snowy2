@@ -13,12 +13,20 @@
   import EwPower from "./EWPower.svelte";
   import EPower from "./EPower.svelte"; 
 
-  let snowy2Gen = 0;
-  let tumut1Gen = 0;
-  let tumut2Gen = 0;
-  let upptumutGen = 0;
+  let snowy2Gen: number = 0;
+  let tumut1Gen: number = 0;
+  let tumut2Gen: number = 0;
+  let upptumutGen: number = 0;
   let tumut3Gen: number = 0;
-  let bloweringGen = 0;
+  let bloweringGen: number = 0;
+
+  let tantangaraVol: number = 60000;
+  let eucumbeneVol: number = 70000;
+  let tumut1Vol: number = 60000;
+  let tumut2Vol: number = 70000;
+  let talbingoVol: number = 80000;
+  let journamaVol: number = 90000;
+  let bloweringVol: number = 30000;
 
   let qresult = undefined;
 
@@ -63,9 +71,9 @@
 <div class="container">
   <Empty />
   <Empty />
-  <Dam name="Tantangara" size="255,000ML" />
+  <Dam name="Tantangara"  currVol={tantangaraVol} currAccessible=234 size=255000 />
   <EArrow gen={1} />
-  <Dam name="Eucumbene" size="4,798,400ML" />
+  <Dam name="Eucumbene"  currVol={eucumbeneVol} currAccessible=234 size=4798400 />
   <EArrow gen={1} />
   <p>Irrigation/Enviro/Town water</p>
 
@@ -95,7 +103,7 @@
 
   <Empty />
   <Empty />
-  <Dam name="Talbingo" size="921,400ML" />
+  <Dam name="Talbingo"  currVol={talbingoVol} currAccessible=234 size=921400 />
   <WArrow gen={tumut2Gen} />
   <Gen name="Tumut 2" size="286MW" gen={tumut2Gen} turbineSize=71 turbines=4 head=262 maxFlow=119 />
   <EPower gen={tumut2Gen} />
@@ -127,9 +135,9 @@
 
   <Empty />
   <Empty />
-  <Dam name="Journama" size="43,542ML" />
+  <Dam name="Journama" currVol={journamaVol} currAccessible=234 size=43542 />
   <EArrow gen={1} />
-  <Dam name="Blowering" size="1,628,000ML" />
+  <Dam name="Blowering"  currVol={bloweringVol} currAccessible=234 size=1628000 />
   <Empty />
   <Empty />
 

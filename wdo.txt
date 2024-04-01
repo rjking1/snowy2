@@ -1,0 +1,103 @@
+get Tantangara daily storage vol mean, min and max for period
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=json&ts_path=w00205-410543/410543/StorageVolume/Pat6_C_B_1_DailyMean,w00205-410543/410543/StorageVolume/Pat6_C_B_1_DailyMin,w00205-410543/410543/StorageVolume/Pat6_C_B_1_DailyMax,&from=2024-03-01T00:00:00&to=2024-04-05T23:59:59&metadata=true&timezone=individual&md_returnfields=ts_shortname,ts_unitsymbol,parametertype_name&userId=pub
+
+Journama - last data is Nov 2023 ??
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=json&ts_path=w00205-410573/410573/StorageVolume/Pat6_C_B_1_DailyMean,w00205-410573/410573/StorageVolume/Pat6_C_B_1_DailyMin,w00205-410573/410573/StorageVolume/Pat6_C_B_1_DailyMax,&from=2024-03-01T00:00:00&to=2024-04-07T23:59:59&metadata=true&timezone=individual&md_returnfields=ts_shortname,ts_unitsymbol,parametertype_name&userId=pub
+
+
+try talbingo...
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=json&ts_path=w00205-410572A/410572A/StorageVolume/Pat6_C_B_1_DailyMean,w00205-410572A/410572A/StorageVolume/Pat6_C_B_1_DailyMin,w00205-410572A/410572A/StorageVolume/Pat6_C_B_1_DailyMax,&from=2024-03-01T00:00:00&to=2024-04-03T23:59:59&metadata=true&timezone=individual&md_returnfields=ts_shortname,ts_unitsymbol,parametertype_name&userId=pub
+
+no good ?? but succeeds a week or so later... see below - must be a slight diff ...
+
+
+1/4/2024 repeating get tantangara daily data summary...
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=json&ts_path=w00205-410543/410543/StorageVolume/Pat6_C_B_1_DailyMean,w00205-410543/410543/StorageVolume/Pat6_C_B_1_DailyMin,w00205-410543/410543/StorageVolume/Pat6_C_B_1_DailyMax,&from=2024-03-01T00:00:00&to=2024-03-31T23:59:59&metadata=true&timezone=individual&md_returnfields=ts_shortname,ts_unitsymbol,parametertype_name&userId=pub
+
+and try talbingo again
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getGraph&datasource=0&format=png&ts_id=325817010&width=442&height=306&from=1706014800000&to=1706706000000&template=measurement_standard
+
+no above is a chart
+
+storage vol / daily and copy URL from dev tools - talbingo
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=json&ts_path=w00205-410572A/410572A/StorageVolume/Pat6_C_B_1_DailyMean,w00205-410572A/410572A/StorageVolume/Pat6_C_B_1_DailyMin,w00205-410572A/410572A/StorageVolume/Pat6_C_B_1_DailyMax,&from=2024-01-01T00:00:00&to=2024-01-31T23:59:59&metadata=true&timezone=individual&md_returnfields=ts_shortname,ts_unitsymbol,parametertype_name&userId=pub
+
+yes!  just most of month is null - just have data for last 3 days  values around 853000
+
+data download...
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesList&datasource=0&format=json&station_id=3378061&stationparameter_name=StorageVolume&returnfields=ts_id,ts_name,ts_shortname,station_name,station_no,stationparameter_name,coverage,ts_utcoffset&userId=pub
+
+choose json
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=json&ts_id=365334010&from=2024-01-30T00:00:00.000%2B10:00&to=2024-02-01T00:00:00.000%2B10:00&returnfields=Timestamp,Value,Quality%20Code,Interpolation%20Type&language=en&timezone=individual&downloadaszip=true&csvdiv=%2C&md_returnfields=station_longname,station_no,station_latitude,station_longitude,parametertype_name,ts_name,ts_unitname,custom_attributes&custattr_returnfields=DATA_OWNER_NAME&metadata=true&downloadfilename=json.w00205.20240401155304.410572A
+
+csv...
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=csv&ts_id=365334010&from=2024-01-30T00:00:00.000%2B10:00&to=2024-02-01T00:00:00.000%2B10:00&returnfields=Timestamp,Value,Quality%20Code,Interpolation%20Type&language=en&timezone=individual&downloadaszip=true&csvdiv=%2C&md_returnfields=station_longname,station_no,station_latitude,station_longitude,parametertype_name,ts_name,ts_unitname,custom_attributes&custattr_returnfields=DATA_OWNER_NAME&metadata=true&downloadfilename=csv.w00205.20240401155435.410572A
+
+above causes a zip file to be downloaded in a mixed json/csv type format.  above is continuous accessible storage values
+
+
+cont/.. Talbingo / Data download accordion choice 7d
+
+dailymean accessible vol: has all 7d
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=csv&ts_id=365335010&from=2024-01-24T00:00:00.000%2B10:00&to=2024-02-01T00:00:00.000%2B10:00&returnfields=Timestamp,Value,Quality%20Code,Interpolation%20Type&language=en&timezone=individual&downloadaszip=true&csvdiv=%2C&md_returnfields=station_longname,station_no,station_latitude,station_longitude,parametertype_name,ts_name,ts_unitname,custom_attributes&custattr_returnfields=DATA_OWNER_NAME&metadata=true&downloadfilename=csv.w00205.20240401161136.410572A
+
+dailymean . only has 2points from last 7d
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=csv&ts_id=325819010&from=2024-01-24T00:00:00.000%2B10:00&to=2024-02-01T00:00:00.000%2B10:00&returnfields=Timestamp,Value,Quality%20Code,Interpolation%20Type&language=en&timezone=individual&downloadaszip=true&csvdiv=%2C&md_returnfields=station_longname,station_no,station_latitude,station_longitude,parametertype_name,ts_name,ts_unitname,custom_attributes&custattr_returnfields=DATA_OWNER_NAME&metadata=true&downloadfilename=csv.w00205.20240401161255.410572A
+
+not getting a file now???
+
+
+
+From https://github.com/csiro-hydroinformatics/pybomwater
+
+try Pat1_C_B_1_HourlyMean for Tantangara .. works : 
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=json&ts_path=w00205-410543/410543/StorageVolume/Pat6_C_B_1_HourlyMean,&from=2024-03-30T00:00:00&to=2024-04-01T23:59:59&metadata=true&timezone=individual&md_returnfields=ts_shortname,ts_unitsymbol,parametertype_name&userId=pub
+
+values in 62000 range as per daily min/max/mean at top
+
+but Talbingo does not ?? not even dailymean
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=json&ts_path=w00205-410572A/410572A/StorageVolume/Pat6_C_B_1_DailyMean,&from=2024-03-01T00:00:00&to=2024-04-01T23:59:59&metadata=true&timezone=individual&md_returnfields=ts_shortname,ts_unitsymbol,parametertype_name&userId=pub
+
+no error but no data
+
+
+
+
+experiment with Talbingo after seeing this value
+
+Pat6_PR02_AV_1_DailyMean    -- Daily mean - accessible volume !!!
+
+in response when open download
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=json&ts_path=w00205-410572A/410572A/StorageVolume/Pat6_PR02_AV_1_DailyMean,&from=2024-01-01T00:00:00&to=2024-01-31T23:59:59&metadata=true&timezone=individual&md_returnfields=ts_shortname,ts_unitsymbol,parametertype_name&userId=pub
+
+gives values in 
+
+106000 to 91000 range - looks right for Jan 24   Daily mean - accessible volume   last data is in Jan 24!!!
+
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=json&ts_path=w00205-410572A/410572A/StorageVolume/Pat6_C_B_1_DailyMean,&from=2024-01-01T00:00:00&to=2024-01-31T23:59:59&metadata=true&timezone=individual&md_returnfields=ts_shortname,ts_unitsymbol,parametertype_name&userId=pub
+
+gives values in 853000 range at end - most of month is null  - why no longer getting timely data - is there a better source?
+
+
+
+
+
+
+
+
+
+

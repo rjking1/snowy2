@@ -1,5 +1,9 @@
-<script lang=ts>
-  import { doFetch, doInternalLogin, writeAuditText } from "../../common/dbutils";
+<script lang="ts">
+  import {
+    doFetch,
+    doInternalLogin,
+    writeAuditText,
+  } from "../../common/dbutils";
   // import { gotoPage } from "./pageStack.js";
   import Router, { link, push } from "svelte-spa-router";
   import {
@@ -11,8 +15,14 @@
     permissions,
     views,
   } from "./stores";
-  import {ART7_DB_PREFIX, ART7_DSQL_URL, PYBASE_DB_PREFIX, PYBASE_DSQL_URL} from "../../common/config.js";
+  import {
+    ART7_DB_PREFIX,
+    ART7_DSQL_URL,
+    PYBASE_DB_PREFIX,
+    PYBASE_DSQL_URL,
+  } from "../../common/config.js";
   import md5 from "blueimp-md5";
+  import { Button, Input, Label } from "flowbite-svelte";
 
   let server;
   let dbprefix;
@@ -26,7 +36,7 @@
     let [db, server_abbrev] = $dbName.split(":"); // so for pybase, specify as nem:py
     console.log(db);
     console.log(server_abbrev);
-    if(server_abbrev == "py") {
+    if (server_abbrev == "py") {
       server = PYBASE_DSQL_URL;
       dbprefix = PYBASE_DB_PREFIX;
     } else {
@@ -34,19 +44,17 @@
       dbprefix = ART7_DB_PREFIX;
     }
 
-    // console.log("about to login..", username, password); 
-    qresult = await doInternalLogin(
-      {
-        db: dbprefix + db, 
-        server: server, 
-        up: md5(username.toUpperCase() + md5(password) + "up"),
-      }
-    );
-    token = qresult[0]['token'];
+    // console.log("about to login..", username, password);
+    qresult = await doInternalLogin({
+      db: dbprefix + db,
+      server: server,
+      up: md5(username.toUpperCase() + md5(password) + "up"),
+    });
+    token = qresult[0]["token"];
     console.log("token=", token);
 
     qresult = await doFetch(
-      {db: dbprefix + db, server: server, token: token},
+      { db: dbprefix + db, server: server, token: token },
       "select u.id, u.user_name, def_capab, exceptions from py_roles r join py_users u on r.id=u.role_id where upper(u.user_name)='" +
         username.toUpperCase() +
         "' and (u.password='" +
@@ -67,7 +75,7 @@
         ex: qresult[0]["exceptions"],
         token: token,
       };
-      $dbN = {db: dbprefix + db, server: server, token: token};
+      $dbN = { db: dbprefix + db, server: server, token: token };
       $loggedIn = "true";
 
       // qresult = await doFetch(
@@ -76,7 +84,7 @@
       // );
       // $society = qresult[0]["val"];
       // $permissions["tables_prefix"] = qresult[1]["val"] // for the future and need to add to all databases
-      
+
       console.log($permissions);
 
       // $views = await doFetch(
@@ -94,23 +102,25 @@
 
       // $page = gotoPage("index", "index");
       push("/diagram");
+      // $page = "diagram";
     }
   }
 </script>
 
 <main>
-  <form on:submit|preventDefault={doLogin}>
-    <label for="db">Database</label>
-    <input id="db" bind:value={$dbName} required />
+  <!-- <form on:submit|preventDefault={doLogin}> -->
+    <Label class="mt-4 items-center">
+      Database <Input class="me-4 font-bold" bind:value={$dbName} required />
+    </Label>
+    <Label class="mt-4 items-center">
+      User name <Input class="me-4 font-bold" bind:value={username} required />
+    </Label>
+    <Label class="mt-4 items-center">
+      Password <Input type="password" class="me-4 font-bold" bind:value={password} required />
+    </Label>
 
-    <label for= "user">User name</label>
-    <input id="user" bind:value={username} required />
-
-    <label for="password">Password</label>
-    <input id="password" type="password" bind:value={password} required autocomplete />
-
-    <button id="login" type="submit">Login</button>
-  </form>
+    <Button on:click={doLogin}>Login</Button>
+  <!-- </form> -->
 </main>
 
 <style>
