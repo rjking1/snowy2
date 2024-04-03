@@ -20,13 +20,19 @@
   let tumut3Gen: number = 0;
   let bloweringGen: number = 0;
 
-  let tantangaraVol: number = 60000;
-  let eucumbeneVol: number = 70000;
+  let tantangaraVol: number = 62665;
+  let tantangaraAccVol: number = 47300;
+  let tantangaraDate = "01-04-2024";
+  let eucumbeneVol: number = 2677000;
+  let eucumbeneAccVol: number = 1813000;
+  let eucumbeneDate = "01-04-2024";
   let tumut1Vol: number = 60000;
   let tumut2Vol: number = 70000;
-  let talbingoVol: number = 80000;
-  let journamaVol: number = 90000;
-  let bloweringVol: number = 30000;
+  let talbingoVol: number = 860000;
+  let talbingoAccVol: number = 101000;
+  let talbingoDate = "31-01-2024";
+  let journamaVol: number = 35805;
+  let bloweringVol: number = 1050000;
 
   let qresult = undefined;
 
@@ -69,11 +75,11 @@
 </div> -->
 
 <div class="container">
+  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click={doRefresh}>Refresh</button>
   <Empty />
-  <Empty />
-  <Dam name="Tantangara"  currVol={tantangaraVol} currAccessible=234 size=255000 />
+  <Dam name="Tantangara"  currVol={tantangaraVol} currAccessible={tantangaraAccVol} currDate={tantangaraDate} size=255000 />
   <EArrow gen={1} />
-  <Dam name="Eucumbene"  currVol={eucumbeneVol} currAccessible=234 size=4798400 />
+  <Dam name="Eucumbene"  currVol={eucumbeneVol} currAccessible={eucumbeneAccVol}  currDate={eucumbeneDate} size=4798400 />
   <EArrow gen={1} />
   <p>Irrigation/Enviro/Town water</p>
 
@@ -103,7 +109,7 @@
 
   <Empty />
   <Empty />
-  <Dam name="Talbingo"  currVol={talbingoVol} currAccessible=234 size=921400 />
+  <Dam name="Talbingo"  currVol={talbingoVol} currAccessible={talbingoAccVol}  currDate={talbingoDate} size=921400 />
   <WArrow gen={tumut2Gen} />
   <Gen name="Tumut 2" size="286MW" gen={tumut2Gen} turbineSize=71 turbines=4 head=262 maxFlow=119 />
   <EPower gen={tumut2Gen} />
@@ -121,7 +127,7 @@
   <EwPower gen={tumut3Gen} />
   <Gen name="Tumut 3" size="1,800MW (600 pumping)" gen={tumut3Gen} turbineSize=300 turbines=6 head=150 maxFlow=6*188 />
   <Empty />
-  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click={doRefresh}>Refresh</button>
+  <Empty />
   <Empty />
   <Empty />
 
@@ -135,9 +141,9 @@
 
   <Empty />
   <Empty />
-  <Dam name="Journama" currVol={journamaVol} currAccessible=234 size=43542 />
+  <Dam name="Journama" currVol={journamaVol} currAccessible=22500 currDate={talbingoDate} size=43542 />
   <EArrow gen={1} />
-  <Dam name="Blowering"  currVol={bloweringVol} currAccessible=234 size=1628000 />
+  <Dam name="Blowering"  currVol={bloweringVol} currAccessible=1043000 currDate={eucumbeneDate} size=1628000 />
   <Empty />
   <Empty />
 
@@ -175,6 +181,9 @@
   <Empty />
   <Empty />
   <Empty />
+</div>
+<div>
+  Data sourced from AEMO, BoM http://www.bom.gov.au/waterdata/ and wikipedia https://en.wikipedia.org/wiki/List_of_dams_and_reservoirs_in_Australia and related sources
 </div>
 
 <style>

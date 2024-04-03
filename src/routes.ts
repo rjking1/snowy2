@@ -1,7 +1,7 @@
 import LoginPage from "./LoginPage.svelte";
 // import ListPage from "./ListPage.svelte";
 import NotFound from "./NotFound.svelte";
-import QueryPage from "./QueryPage.svelte";
+// import QueryPage from "./QueryPage.svelte";
 import Diagram from "./Diagram.svelte";
 // import { wrap } from "svelte-spa-router/wrap";
 
@@ -12,7 +12,7 @@ export const routes = {
   // "/article/:title": Article,
   // "/login": LoginPage,
   // "/list": ListPage,
-  "/query": QueryPage,
+  // "/query": QueryPage,
   "/diagram": Diagram,
   // Wildcard
   "*": NotFound,

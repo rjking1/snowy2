@@ -8,9 +8,9 @@ export const views = writable("")
 export const emailDetails = writable("")
 export const gOptions = writable({})
 
-let db_local = localStorage.getItem('pybase_db')
-export const dbName = writable(db_local || 'hut')
-dbName.subscribe((value) => localStorage.setItem('pybase_db', value))
+let db_local = localStorage.getItem('pybase_db_snowy')
+export const dbName = writable(db_local || 'nem:py')
+dbName.subscribe((value) => localStorage.setItem('pybase_db_snowy', value))
 
 export const dbN = writable({})  // the full name, ie art25..._test
 

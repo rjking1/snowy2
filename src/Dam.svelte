@@ -2,11 +2,17 @@
   import { Popover } from "flowbite-svelte";
 
   export let name: string;
-  export let currVol: number = 40;
-  export let currAccessible: number = 20;
-  export let size: number = 100; // capacity
+  export let size: number = 10000; // capacity
+  export let currVol: number = 4000;
+  export let currAccessible: number = 2000;
+  export let currDate = "01/01/2024";
 
   $: currPercentage = Math.trunc((currVol * 100.0) / size).toString();
+  $: currAccPercent = Math.trunc((currAccessible * 100.0) / size).toString();
+  $: currVolBal = Math.trunc(
+    ((currVol - currAccessible) * 100.0) / size
+  ).toString();
+  $: lms = size > 1000000 ? "200" : size > 500000 ? "150" : size > 100000 ? "100" : "50";
 
   console.log(name, currVol, size, currPercentage);
 
@@ -14,49 +20,52 @@
 </script>
 
 <div>
-  <meter
-    id="id{id}"
-    value={currPercentage}
-    low="20"
-    high="80"
-    min="0"
-    max="100"
-    optimum="100"
-  ></meter>
-  <span class="meter-value">{name}</span>
+  <div class="w" id="id{id}" style="height: 100px; width: {lms}px">
+    <div class="b" style="height: {currVolBal}px">
+      {currVolBal} %
+    </div>
+    <div class="a" style="height: {currAccPercent}px">
+      {currAccPercent} %
+    </div>
+  </div>
+  {name}
+
   <Popover
     class="w-64 text-sm "
     title={name}
     triggeredBy="#id{id}"
     placement="right"
   >
-    <br />Percentage full: {currPercentage} %
-    <br />Current volume: {currVol} ML
+    Percentage full: {currPercentage} %
     <br />Capacity: {size} ML
-    <br />Accessible volume: {currAccessible} ML
+    <br />Last reading on: {currDate}
+    <br />Current volume: {currVol} ML
+    <br /><span style="background-color: rgba(6, 181, 240, 0.925); width: 10px; height: 10px; color: white">Accessible volume: {currAccessible} ML</span>
+    <br />Accessible percentage: {currAccPercent} %
   </Popover>
 </div>
 
 <style>
-  meter {
-    height: 180px;
-    width: 80px;
-    transform: rotate(-90deg);
+  .w {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    background-color: lightgray;
+    border: 2px solid black;
+    border-radius: 3px;
+    font-family: Helvetica;
+    font-size: 10pt;
   }
 
-  .meter-value {
-    display: block;
-    position: relative;
-    top: -40px;
-    height: 20px;
+  .a {
+    background-color: rgba(6, 181, 240, 0.925);
+    color: #fff;
+    width: 100%;
   }
 
-  meter::-webkit-meter-suboptimum-value {
-    background: none;
-    background-color: #2266ee;
-  }
-  :-moz-meter-sub-optimum::-moz-meter-bar {
-    background: none;
-    background-color: #3333ee;
+  .b {
+    background-color: rgb(12, 128, 167);
+    color: #fff ;
+    width: 100%;
   }
 </style>
