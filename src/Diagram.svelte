@@ -11,7 +11,7 @@
   import SArrow from "./SArrow.svelte";
   import Pylon from "./Pylon.svelte";
   import EwPower from "./EWPower.svelte";
-  import EPower from "./EPower.svelte"; 
+  import EPower from "./EPower.svelte";
 
   let snowy2Gen: number = 0;
   let tumut1Gen: number = 0;
@@ -74,12 +74,27 @@
   <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click={doRefresh}>Refresh</button>
 </div> -->
 
-<div class="container">
-  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click={doRefresh}>Refresh</button>
+<div class="snowy-grid">
+  <button
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    on:click={doRefresh}>Refresh</button
+  >
   <Empty />
-  <Dam name="Tantangara"  currVol={tantangaraVol} currAccessible={tantangaraAccVol} currDate={tantangaraDate} size=255000 />
+  <Dam
+    name="Tantangara"
+    currVol={tantangaraVol}
+    currAccessible={tantangaraAccVol}
+    currDate={tantangaraDate}
+    size="255000"
+  />
   <EArrow gen={1} />
-  <Dam name="Eucumbene"  currVol={eucumbeneVol} currAccessible={eucumbeneAccVol}  currDate={eucumbeneDate} size=4798400 />
+  <Dam
+    name="Eucumbene"
+    currVol={eucumbeneVol}
+    currAccessible={eucumbeneAccVol}
+    currDate={eucumbeneDate}
+    size="4798400"
+  />
   <EArrow gen={1} />
   <p>Irrigation/Enviro/Town water</p>
 
@@ -93,9 +108,25 @@
 
   <Pylon gen={snowy2Gen} />
   <EwPower gen={snowy2Gen} />
-  <Gen name="Snowy 2.0" size="2000MW" gen={snowy2Gen} turbineSize=340 turbines=6 head=700 maxFlow=6*50 />  
+  <Gen
+    name="Snowy 2.0"
+    size="2000MW"
+    gen={snowy2Gen}
+    turbineSize="340"
+    turbines="6"
+    head="700"
+    maxFlow="6*50"
+  />
   <Empty />
-  <Gen name="Tumut 1" size="330MW" gen={tumut1Gen} turbineSize=82 turbines=4 head=292 maxFlow=119 />
+  <Gen
+    name="Tumut 1"
+    size="330MW"
+    gen={tumut1Gen}
+    turbineSize="82"
+    turbines="4"
+    head="292"
+    maxFlow="119"
+  />
   <EPower gen={tumut1Gen} />
   <Empty />
 
@@ -109,9 +140,23 @@
 
   <Empty />
   <Empty />
-  <Dam name="Talbingo"  currVol={talbingoVol} currAccessible={talbingoAccVol}  currDate={talbingoDate} size=921400 />
+  <Dam
+    name="Talbingo"
+    currVol={talbingoVol}
+    currAccessible={talbingoAccVol}
+    currDate={talbingoDate}
+    size="921400"
+  />
   <WArrow gen={tumut2Gen} />
-  <Gen name="Tumut 2" size="286MW" gen={tumut2Gen} turbineSize=71 turbines=4 head=262 maxFlow=119 />
+  <Gen
+    name="Tumut 2"
+    size="286MW"
+    gen={tumut2Gen}
+    turbineSize="71"
+    turbines="4"
+    head="262"
+    maxFlow="119"
+  />
   <EPower gen={tumut2Gen} />
   <Empty />
 
@@ -125,7 +170,15 @@
 
   <Pylon gen={tumut3Gen} />
   <EwPower gen={tumut3Gen} />
-  <Gen name="Tumut 3" size="1,800MW (600 pumping)" gen={tumut3Gen} turbineSize=300 turbines=6 head=150 maxFlow=6*188 />
+  <Gen
+    name="Tumut 3"
+    size="1,800MW (600 pumping)"
+    gen={tumut3Gen}
+    turbineSize="300"
+    turbines="6"
+    head="150"
+    maxFlow="6*188"
+  />
   <Empty />
   <Empty />
   <Empty />
@@ -141,9 +194,21 @@
 
   <Empty />
   <Empty />
-  <Dam name="Journama" currVol={journamaVol} currAccessible=22500 currDate={talbingoDate} size=43542 />
+  <Dam
+    name="Journama"
+    currVol={journamaVol}
+    currAccessible="22500"
+    currDate={talbingoDate}
+    size="43542"
+  />
   <EArrow gen={1} />
-  <Dam name="Blowering"  currVol={bloweringVol} currAccessible=1043000 currDate={eucumbeneDate} size=1628000 />
+  <Dam
+    name="Blowering"
+    currVol={bloweringVol}
+    currAccessible="1043000"
+    currDate={eucumbeneDate}
+    size="1628000"
+  />
   <Empty />
   <Empty />
 
@@ -160,7 +225,15 @@
 
   <Empty />
   <Empty />
-  <Gen name="Blowering" size="80MW" gen={bloweringGen} turbineSize=80 turbines=1 head=87 maxFlow=90/>
+  <Gen
+    name="Blowering"
+    size="80MW"
+    gen={bloweringGen}
+    turbineSize="80"
+    turbines="1"
+    head="87"
+    maxFlow="90"
+  />
   <EPower gen={bloweringGen} />
   <Pylon gen={bloweringGen} />
   <Empty />
@@ -183,11 +256,27 @@
   <Empty />
 </div>
 <div>
-  Data sourced from AEMO, BoM http://www.bom.gov.au/waterdata/ and wikipedia https://en.wikipedia.org/wiki/List_of_dams_and_reservoirs_in_Australia and related sources
+  Data sourced from AEMO, BoM http://www.bom.gov.au/waterdata/ and wikipedia
+  https://en.wikipedia.org/wiki/List_of_dams_and_reservoirs_in_Australia and
+  related sources
 </div>
 
 <style>
-  .container {
+  .snowy-grid {
+    display: grid;
+    /* grid-template-columns: 120px 60px 300px 60px 250px 110px 150px; */
+    grid-template-columns: 10% 8% 25% 7% 25% 10% 15%;
+    grid-template-rows: 150px;
+    grid-auto-columns: 150px;
+    grid-auto-rows: auto;
+    grid-auto-flow: row;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    padding: 5px;
+  }
+
+  .nem-grid {
     display: grid;
     /* grid-template-columns: 120px 60px 300px 60px 250px 110px 150px; */
     grid-template-columns: 10% 8% 25% 7% 25% 10% 15%;
