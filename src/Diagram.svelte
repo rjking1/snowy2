@@ -12,6 +12,9 @@
   import Pylon from "./Pylon.svelte";
   import EwPower from "./EWPower.svelte";
   import EPower from "./EPower.svelte";
+  import Region from "./Region.svelte";
+  import Interconnector from "./Interconnector.svelte";
+  import EwInterconnector from "./EWInterconnector.svelte";
 
   let snowy2Gen: number = 0;
   let tumut1Gen: number = 0;
@@ -34,46 +37,59 @@
   let journamaVol: number = 35805;
   let bloweringVol: number = 1050000;
 
-  let qresult = undefined;
+  let qSnowy:any = undefined;
+  let qNem: any = undefined;
+  let qPrice: any = undefined;
+  let qinterc: any = undefined;
+
+  // let qldGen = 0;
+
+  const getByKey = (arr: {}[], key: String, column: String) =>
+      arr.find((x) => x["ID"] === key)[column];
 
   async function doRefresh() {
     // console.log($dbN)
-    qresult = await doFetch(
+    qSnowy = await doFetch(
       $dbN,
-      "select DUID, ROUND(SCADAVALUE,0) as v from DISPATCH__UNIT_SCADA where duid='UPPTUMUT' order by settlementdate desc   limit 1"
+      "select DUID as ID, ROUND(SCADAVALUE,0) as v from DISPATCH__UNIT_SCADA where duid in ('TUMUT3','UPPTUMUT','BLOWERNG','SNOWYP','LYA1') order by settlementdate desc limit 5"
     );
-    console.log(qresult);
-    upptumutGen = parseInt(qresult[0]["v"]);
+    console.log(qSnowy);
+
+    // console.log('LYA1=', getByKey(qSnowy,'LYA1', 'v'));
+    // console.log('UPPTUMUT=', getByKey(qSnowy,'UPPTUMUT', 'v'));
+
+    upptumutGen = parseInt(getByKey(qSnowy, "UPPTUMUT", "v"));
     tumut1Gen = Math.round((upptumutGen * 330) / 616);
     tumut2Gen = Math.round((upptumutGen * 286) / 616);
+    tumut3Gen =
+      parseInt(getByKey(qSnowy, "TUMUT3", "v")) +
+      parseInt(getByKey(qSnowy, "SNOWYP", "v"));
+    bloweringGen = parseInt(getByKey(qSnowy, "BLOWERNG", "v"));
 
-    qresult = await doFetch(
+    qPrice = await doFetch(
       $dbN,
-      "select DUID, ROUND(SCADAVALUE,0) as v from DISPATCH__UNIT_SCADA where duid like 'BLOW%' order by settlementdate desc   limit 1"
+      "select RegionID as ID, ROUND(RRP,2) as rrp from DISPATCH__PRICE order by settlementdate desc limit 5"
     );
-    // console.log(qresult);
-    bloweringGen = parseInt(qresult[0]["v"]);
+    console.log(qNem);
 
-    qresult = await doFetch(
+    qNem = await doFetch(
       $dbN,
-      "select duid, ROUND(SCADAVALUE,0) as v from DISPATCH__UNIT_SCADA where duid = 'TUMUT3' order by settlementdate desc   limit 1"
+      "select RegionID as ID, ROUND(ClearedSupply,0) as supply, ROUND(DispatchableGeneration,0) as gen from DISPATCH__REGIONSUM order by settlementdate desc limit 5"
     );
-    console.log(qresult);
-    tumut3Gen = parseInt(qresult[0]["v"]);
+    console.log(qPrice);
 
-    qresult = await doFetch(
+    qinterc = await doFetch(
       $dbN,
-      "select duid, ROUND(SCADAVALUE,0) as v from DISPATCH__UNIT_SCADA where duid = 'SNOWYP' order by settlementdate desc   limit 1"
+      "select InterconnectorID as ID, ROUND(MWFlow,0) as flow from DISPATCH__INTERCONNECTORRES order by settlementdate desc limit 6"
     );
-    console.log(qresult);
-    tumut3Gen = tumut3Gen + parseInt(qresult[0]["v"]); // addin pump -- only one will be non-zero
+    console.log(qinterc);
+    // qldGen = getByKey(qNem, "QLD1", "supply");
   }
 </script>
 
 <!-- <div>
   <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click={doRefresh}>Refresh</button>
 </div> -->
-
 <div class="snowy-grid">
   <button
     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -255,11 +271,50 @@
   <Empty />
   <Empty />
 </div>
+
+<h1>NEM</h1>
+
+{#if qNem && qSnowy && qinterc && qPrice}
+
+<div class="nem-grid">
+  <Empty />
+  <Empty />
+  <Region name="QLD" price={getByKey(qPrice, "QLD1", "rrp")} supply={getByKey(qNem, "QLD1", "supply")} gen={getByKey(qNem, "QLD1", "gen")}/>
+  <Empty />
+  <Empty />
+  <div class="side-by-side">
+    <Interconnector name="N-Q-MNSP1" flow={getByKey(qinterc, "N-Q-MNSP1", "flow")} />
+    <Interconnector name="NSW1-QLD1" flow={getByKey(qinterc, "NSW1-QLD1", "flow")} />
+  </div>
+
+  <Empty />
+  <Empty />
+  <Region name="NSW" price={getByKey(qPrice, "NSW1", "rrp")} supply={getByKey(qNem, "NSW1", "supply")}  gen={getByKey(qNem, "NSW1", "gen")}/>
+
+  <Empty />
+  <Empty />
+  <Interconnector name="VIC1-NSW1" flow={getByKey(qinterc, "VIC1-NSW1", "flow")}  />
+
+  <Region name="SA" price={getByKey(qPrice, "SA1", "rrp")} supply={getByKey(qNem, "SA1", "supply")} gen={getByKey(qNem, "SA1", "gen")} />
+  <EwInterconnector name="V-SA" flow={getByKey(qinterc, "V-SA", "flow")}  />
+  <Region name="VIC" price={getByKey(qPrice, "VIC1", "rrp")} supply={getByKey(qNem, "VIC1", "supply")} gen={getByKey(qNem, "VIC1", "gen")} />
+
+  <Empty />
+  <Empty />
+  <Interconnector name="Basslink"  flow={getByKey(qinterc, "T-V-MNSP1", "flow")}  />
+
+  <Empty />
+  <Empty />
+  <Region name="TAS" price={getByKey(qPrice, "TAS1", "rrp")} supply={getByKey(qNem, "TAS1", "supply")} gen={getByKey(qNem, "TAS1", "gen")} />
+</div>
+
 <div>
   Data sourced from AEMO, BoM http://www.bom.gov.au/waterdata/ and wikipedia
   https://en.wikipedia.org/wiki/List_of_dams_and_reservoirs_in_Australia and
   related sources
 </div>
+
+{/if}
 
 <style>
   .snowy-grid {
@@ -279,7 +334,7 @@
   .nem-grid {
     display: grid;
     /* grid-template-columns: 120px 60px 300px 60px 250px 110px 150px; */
-    grid-template-columns: 10% 8% 25% 7% 25% 10% 15%;
+    grid-template-columns: 200px 150px 400px;
     grid-template-rows: 150px;
     grid-auto-columns: 150px;
     grid-auto-rows: auto;
@@ -287,6 +342,12 @@
     justify-content: center;
     justify-items: center;
     align-items: center;
-    padding: 5px;
+    padding: 50px;
+  }
+  .side-by-side {
+    display: flex;
+    align-items: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
   }
 </style>

@@ -2,6 +2,7 @@
   import { Popover } from "flowbite-svelte";
 
   export let name: string;
+  export let size: string;
   export let gen: number; // current
   export let head: number = 150; //eg Tumut3 150m
   export let turbines: number = 6; // 6
