@@ -34,7 +34,7 @@
 
 <main>
   <div class="flex flex-row mt-4">
-    <DarkMode />
+    <!-- <DarkMode /> -->
     <Heading tag="h3" class="bg-blue-300">Snowy</Heading>
   </div>
   <Router {routes} />

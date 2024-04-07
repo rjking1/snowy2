@@ -24,7 +24,7 @@
 
 <div class="region">
   <span class="left"><b>{name}</b></span><span class="right">$ {price}</span>
-  <br />Supply: {supply} MW
+  <br /><span class="left">Supply:</span><span class="right">{supply} MW</span> 
   <br />Generation: {gen} MW
 
   <Popover

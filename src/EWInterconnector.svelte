@@ -14,8 +14,7 @@
     alt=""
     style="opacity: {opp}"
   />
-  {name}
-  <br />{Math.abs(flow)}&nbsp;MW
+  {Math.abs(flow)}&nbsp;MW
 </div>
 
 <style>
