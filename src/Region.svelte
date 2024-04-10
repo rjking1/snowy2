@@ -5,6 +5,7 @@
   export let price: number = 0.0;
   export let supply: number = 0;
   export let gen: number = 0;
+  export let rooftop: number = 0;
   // export let size: number = 10000; // capacity
   // export let currVol: number = 4000;
   // export let currAccessible: number = 2000;
@@ -26,6 +27,7 @@
   <span class="left"><b>{name}</b></span><span class="right">$ {price}</span>
   <br /><span class="left">Supply:</span><span class="right">{supply} MW</span> 
   <br />Generation: {gen} MW
+  <br /><span>Rooftop:</span><span class="right">{rooftop} MW</span>
 
   <Popover
     class="w-64 text-sm "
@@ -35,6 +37,7 @@
   >
     Supply: {supply} MW
     <br />Generation: {gen} MW
+    <br />Rooftop: {rooftop} MW
   </Popover>
 </div>
 

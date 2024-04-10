@@ -32,10 +32,16 @@
 
 </script>
 
+<svelte:head>
+  <script
+    src="https://cdn.plot.ly/plotly-latest.min.js"
+    type="text/javascript"></script>
+</svelte:head>
+
 <main>
   <div class="flex flex-row mt-4">
     <!-- <DarkMode /> -->
-    <Heading tag="h3" class="bg-blue-300">Snowy</Heading>
+    <!-- <Heading tag="h3" class="bg-blue-300">Snowy</Heading> -->
   </div>
   <Router {routes} />
   <!-- <MainMenu /> -->

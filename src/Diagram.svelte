@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { DarkMode, Heading } from "flowbite-svelte";
+  import { Button, DarkMode, Heading } from "flowbite-svelte";
+  import { Tabs, TabItem } from "flowbite-svelte";
 
   import { doFetch } from "../../common/dbutils";
   import { dbN } from "./stores";
@@ -17,8 +18,18 @@
   import Region from "./Region.svelte";
   import Interconnector from "./Interconnector.svelte";
   import EwInterconnector from "./EWInterconnector.svelte";
+  import ChartWidget from "./ChartWidget.svelte";
 
   let qDams: any = undefined;
+  let qSnowy: any = undefined;
+  let qNem: any = undefined;
+  let qPrice: any = undefined;
+  let qinterc: any = undefined;
+  let qRooftop: any = undefined;
+  let qSQLresult: any = undefined;
+
+  let widgetList = []; // in case useful to support multiple charts one day and have to update them (copied from dashboard)
+
   let snowy2Gen: number = 0;
   let tumut1Gen: number = 0;
   let tumut2Gen: number = 0;
@@ -26,27 +37,7 @@
   let tumut3Gen: number = 0;
   let bloweringGen: number = 0;
 
-  // let tantangaraVol: number = 62665;
-  // let tantangaraAccVol: number = 47300;
-  // let tantangaraDate = "01-04-2024";
-  let eucumbeneVol: number = 2677000;
-  let eucumbeneAccVol: number = 1813000;
-  let eucumbeneDate = "01-04-2024";
-  let tumut1Vol: number = 60000;
-  let tumut2Vol: number = 70000;
-  let talbingoVol: number = 860000;
-  let talbingoAccVol: number = 101000;
-  let talbingoDate = "31-01-2024";
-  let journamaVol: number = 35805;
-  let bloweringVol: number = 1050000;
-
-  let qSnowy: any = undefined;
-  let qNem: any = undefined;
-  let qPrice: any = undefined;
-  let qinterc: any = undefined;
   let marketTime = "";
-
-  // let qldGen = 0;
 
   const getByKey = (arr: {}[], key: string, column: string): string =>
     arr.find((x) => x["ID"] === key)[column];
@@ -64,10 +55,6 @@
       "select dam_id as ID, datetime, vol, acc_vol from DAM_VOLS order by datetime desc limit 5"
     );
     console.log(qDams);
-
-    // console.log('LYA1=', getByKey(qSnowy,'LYA1', 'v'));
-    // console.log('TAN=', parseInt(getByKey(qDams,'TAN', 'vol')));
-    // tantangaraVol=parseInt(getByKey(qDams,'TAN', 'vol'));
 
     upptumutGen = parseInt(getByKey(qSnowy, "UPPTUMUT", "v"));
     tumut1Gen = Math.round((upptumutGen * 330) / 616);
@@ -90,288 +77,377 @@
     );
     console.log(qNem);
 
+    qRooftop = await doFetch(
+      $dbN, // Where interval_datetime >= curdate()
+      "select REGIONID as ID, INTERVAL_DATETIME, round(POWER,0) as power from ROOFTOP__ACTUAL order by interval_datetime desc limit 5"
+    );
+    console.log(qRooftop);
+
     qinterc = await doFetch(
       $dbN,
       "select InterconnectorID as ID, ROUND(MWFlow,0) as flow from DISPATCH__INTERCONNECTORRES order by settlementdate desc limit 6"
     );
     console.log(qinterc);
-    // qldGen = getByKey(qNem, "QLD1", "supply");
 
     marketTime = getByKey(qPrice, "QLD1", "settlementdate").slice(11, 16);
+
+    qSQLresult = await doFetch(
+      // -- {"height":400, "orientation":"h"}
+      // (select max(settlementdate) from DISPATCH__PRICE)
+      $dbN,
+      `select m.fueltype as _ft, m.regionid, sumSCADA as "mw#" from SCADA_BY_FUELTYPE m \
+      Where settlementdate = (select max(settlementdate) from DISPATCH__PRICE) \
+      group by 2,1 ORDER BY FIELD(_ft, 'Rooftop PV'), _ft, regionid`
+    );
+    console.log(qSQLresult);
+
+    await addChartWidget("#plotlychart", qSQLresult, "bar", {
+      height: 800,
+      width: 800,
+      orientation: "h",
+    });
+
+    // async function doChart() {
+    // fields = JSON.parse(v.fields);
+    // if (fields === null) {
+    //   fields = [];
+    // }
+    // fields.push({ fieldName: "id", visibility: false });
+    // console.log(fields);
+
+    // let sql_text = v.get_sql.replace("%d", p.id);
+    // let [opts, ...sql] = sql_text.split(/\r?\n/);
+    // if (opts.startsWith("-- {")) {
+    //   opts = JSON.parse(opts.slice(3));
+    //   sql = sql.join("\n");
+    // } else {
+    //   opts = {};
+    //   sql = sql_text;
+    // }
+
+    // console.log(sql);
+    // const datetime = $gOptions.datetime;
+    // sql = sql.replaceAll(":datetime:", datetime); // maybe this should also quote the datetime string
+    // sql = sql.replaceAll(":duid:", $gOptions.duid);
+    // console.log(sql);
+
+    // opts.datetime = datetime;
+    // console.log(opts);
+
+    // data = await doFetch($dbN, sql);
+
+    // addChartWidget("#plotlychart", qSQLresult, 'bar', '');
+    // }
+  }
+
+  async function addChartWidget(s, data, chartType, opts) {
+    widgetList.push({
+      sel: s,
+      wgt: new ChartWidget({
+        target: document.querySelector(s),
+        props: {
+          div: s,
+          data: data,
+          chartType: chartType,
+          opts: opts,
+        },
+      }),
+    });
+  }
+
+  async function dbg() {
+    console.log("dbg:", qSQLresult);
   }
 </script>
 
-{#if qSnowy && qDams}
-  <div class="snowy-grid">
-    <Empty />
-    <Empty />
-    <Dam
-      name="Tantangara"
-      currDate={getByKey(qDams, "TAN", "datetime")}
-      currVol={parseInt(getByKey(qDams, "TAN", "vol"))}
-      currAccessible={parseInt(getByKey(qDams, "TAN", "acc_vol"))}
-      size="255000"
-    />
-    <EArrow gen={1} />
-    <Dam
-      name="Eucumbene"
-      currDate={getByKey(qDams, "EUC", "datetime")}
-      currVol={parseInt(getByKey(qDams, "EUC", "vol"))}
-      currAccessible={parseInt(getByKey(qDams, "EUC", "acc_vol"))}
-      size="4798400"
-    />
-    <EArrow gen={1} />
-    <p>Irrigation, Environment, Town water</p>
+<Tabs
+  style="pill"
+  contentClass="p-4 bg-white-50 rounded-lg dark:bg-gray-800 mt-4"
+>
+  <Button color="light" on:click={doRefresh}>Refresh</Button>
+  <TabItem open title="Snowy Dams">
+    {#if qSnowy && qDams}
+      <div class="snowy-grid">
+        <Empty />
+        <Empty />
+        <Dam
+          name="Tantangara"
+          currDate={getByKey(qDams, "TAN", "datetime")}
+          currVol={parseInt(getByKey(qDams, "TAN", "vol"))}
+          currAccessible={parseInt(getByKey(qDams, "TAN", "acc_vol"))}
+          size="255000"
+        />
+        <EArrow gen={1} />
+        <Dam
+          name="Eucumbene"
+          currDate={getByKey(qDams, "EUC", "datetime")}
+          currVol={parseInt(getByKey(qDams, "EUC", "vol"))}
+          currAccessible={parseInt(getByKey(qDams, "EUC", "acc_vol"))}
+          size="4798400"
+        />
+        <EArrow gen={1} />
+        <p>Irrigation, Environment, Town water</p>
 
-    <Empty />
-    <Empty />
-    <NSArrow gen={snowy2Gen} />
-    <Empty />
-    <SArrow gen={tumut1Gen} />
-    <Empty />
-    <Empty />
+        <Empty />
+        <Empty />
+        <NSArrow gen={snowy2Gen} />
+        <Empty />
+        <SArrow gen={tumut1Gen} />
+        <Empty />
+        <Empty />
 
-    <Pylon gen={snowy2Gen} />
-    <EwPower gen={snowy2Gen} />
-    <Gen
-      name="Snowy 2.0"
-      size="2000MW"
-      gen={snowy2Gen}
-      turbineSize="340"
-      turbines="6"
-      head="700"
-      maxFlow="6*50"
-    />
-    <Empty />
-    <Gen
-      name="Tumut 1"
-      size="330MW"
-      gen={tumut1Gen}
-      turbineSize="82"
-      turbines="4"
-      head="292"
-      maxFlow="119"
-    />
-    <EPower gen={tumut1Gen} />
-    <Empty />
+        <Pylon gen={snowy2Gen} />
+        <EwPower gen={snowy2Gen} />
+        <Gen
+          name="Snowy 2.0"
+          size="2000MW"
+          gen={snowy2Gen}
+          turbineSize="340"
+          turbines="6"
+          head="700"
+          maxFlow="6*50"
+        />
+        <Empty />
+        <Gen
+          name="Tumut 1"
+          size="330MW"
+          gen={tumut1Gen}
+          turbineSize="82"
+          turbines="4"
+          head="292"
+          maxFlow="119"
+        />
+        <EPower gen={tumut1Gen} />
+        <Empty />
 
-    <Empty />
-    <Empty />
-    <NSArrow gen={snowy2Gen} />
-    <Empty />
-    <SArrow gen={tumut1Gen} />
-    <Empty />
-    <Pylon gen={upptumutGen} />
+        <Empty />
+        <Empty />
+        <NSArrow gen={snowy2Gen} />
+        <Empty />
+        <SArrow gen={tumut1Gen} />
+        <Empty />
+        <Pylon gen={upptumutGen} />
 
-    <Empty />
-    <Empty />
-    <Dam
-      name="Talbingo"
-      currDate={getByKey(qDams, "TAL", "datetime")}
-      currVol={parseInt(getByKey(qDams, "TAL", "vol"))}
-      currAccessible={parseInt(getByKey(qDams, "TAL", "acc_vol"))}
-      size="921400"
-    />
-    <WArrow gen={tumut2Gen} />
-    <Gen
-      name="Tumut 2"
-      size="286MW"
-      gen={tumut2Gen}
-      turbineSize="71"
-      turbines="4"
-      head="262"
-      maxFlow="119"
-    />
-    <EPower gen={tumut2Gen} />
-    <Empty />
+        <Empty />
+        <Empty />
+        <Dam
+          name="Talbingo"
+          currDate={getByKey(qDams, "TAL", "datetime")}
+          currVol={parseInt(getByKey(qDams, "TAL", "vol"))}
+          currAccessible={parseInt(getByKey(qDams, "TAL", "acc_vol"))}
+          size="921400"
+        />
+        <WArrow gen={tumut2Gen} />
+        <Gen
+          name="Tumut 2"
+          size="286MW"
+          gen={tumut2Gen}
+          turbineSize="71"
+          turbines="4"
+          head="262"
+          maxFlow="119"
+        />
+        <EPower gen={tumut2Gen} />
+        <Empty />
 
-    <Empty />
-    <Empty />
-    <NSArrow gen={tumut3Gen} />
-    <Empty />
-    <Empty />
-    <Empty />
-    <Empty />
+        <Empty />
+        <Empty />
+        <NSArrow gen={tumut3Gen} />
+        <Empty />
+        <Empty />
+        <Empty />
+        <Empty />
 
-    <Pylon gen={tumut3Gen} />
-    <EwPower gen={tumut3Gen} />
-    <Gen
-      name="Tumut 3"
-      size="1,800MW (600 pumping)"
-      gen={tumut3Gen}
-      turbineSize="300"
-      turbines="6"
-      head="150"
-      maxFlow="6*188"
-    />
-    <Empty />
-    <Empty />
-    <Empty />
-    <Empty />
+        <Pylon gen={tumut3Gen} />
+        <EwPower gen={tumut3Gen} />
+        <Gen
+          name="Tumut 3"
+          size="1,800MW (600 pumping)"
+          gen={tumut3Gen}
+          turbineSize="300"
+          turbines="6"
+          head="150"
+          maxFlow="6*188"
+        />
+        <Empty />
+        <Empty />
+        <Empty />
+        <Empty />
 
-    <Empty />
-    <Empty />
-    <NSArrow gen={tumut3Gen} />
-    <Empty />
-    <Empty />
-    <Empty />
-    <Empty />
+        <Empty />
+        <Empty />
+        <NSArrow gen={tumut3Gen} />
+        <Empty />
+        <Empty />
+        <Empty />
+        <Empty />
 
-    <Empty />
-    <Empty />
-    <Dam
-      name="Journama"
-      currDate={getByKey(qDams, "JOU", "datetime")}
-      currVol={parseInt(getByKey(qDams, "JOU", "vol"))}
-      currAccessible={parseInt(getByKey(qDams, "JOU", "acc_vol"))}
-      size="43542"
-    />
-    <EArrow gen={1} />
-    <Dam
-      name="Blowering"
-      currDate={getByKey(qDams, "BLO", "datetime")}
-      currVol={parseInt(getByKey(qDams, "BLO", "vol"))}
-      currAccessible={parseInt(getByKey(qDams, "BLO", "acc_vol"))}
-      size="1628000"
-    />
-    <Empty />
-    <Empty />
+        <Empty />
+        <Empty />
+        <Dam
+          name="Journama"
+          currDate={getByKey(qDams, "JOU", "datetime")}
+          currVol={parseInt(getByKey(qDams, "JOU", "vol"))}
+          currAccessible={parseInt(getByKey(qDams, "JOU", "acc_vol"))}
+          size="43542"
+        />
+        <EArrow gen={1} />
+        <Dam
+          name="Blowering"
+          currDate={getByKey(qDams, "BLO", "datetime")}
+          currVol={parseInt(getByKey(qDams, "BLO", "vol"))}
+          currAccessible={parseInt(getByKey(qDams, "BLO", "acc_vol"))}
+          size="1628000"
+        />
+        <Empty />
+        <Empty />
 
-    <Empty />
-    <Empty />
-    <Empty />
-    <Empty />
-    <SArrow gen={bloweringGen} />
-    <Empty />
-    <Empty />
+        <Empty />
+        <Empty />
+        <Empty />
+        <Empty />
+        <SArrow gen={bloweringGen} />
+        <Empty />
+        <Empty />
 
-    <Empty />
-    <Empty />
+        <Empty />
+        <Empty />
 
-    <Empty />
-    <Empty />
-    <Gen
-      name="Blowering"
-      size="80MW"
-      gen={bloweringGen}
-      turbineSize="80"
-      turbines="1"
-      head="87"
-      maxFlow="90"
-    />
-    <EPower gen={bloweringGen} />
-    <Pylon gen={bloweringGen} />
-    <Empty />
-    <Empty />
+        <Empty />
+        <Empty />
+        <Gen
+          name="Blowering"
+          size="80MW"
+          gen={bloweringGen}
+          turbineSize="80"
+          turbines="1"
+          head="87"
+          maxFlow="90"
+        />
+        <EPower gen={bloweringGen} />
+        <Pylon gen={bloweringGen} />
+        <Empty />
+        <Empty />
 
-    <Empty />
-    <Empty />
-    <SArrow gen={bloweringGen} />
-    <Empty />
-    <Empty />
-    <Empty />
-    <Empty />
+        <Empty />
+        <Empty />
+        <SArrow gen={bloweringGen} />
+        <Empty />
+        <Empty />
+        <Empty />
+        <Empty />
 
-    <Empty />
-    <Empty />
-    <p>Irrigation, Environment, Town water</p>
-    <Empty />
-    <Empty />
-    <Empty />
-    <Empty />
-  </div>
-{/if}
+        <Empty />
+        <Empty />
+        <p>Irrigation, Environment, Town water</p>
+        <Empty />
+        <Empty />
+        <Empty />
+        <Empty />
+      </div>
+    {/if}
+  </TabItem>
+  <TabItem title="NEM">
+    <div class="flex flex-row mt-4">
+      <!-- <Heading tag="h3" class="bg-blue-300">NEM</Heading> -->
+      {#if qNem && qinterc && qPrice && qRooftop}
+        <div class="nem-grid">
+          <div>Market time: <b>{marketTime}</b></div>
+          <Empty />
+          <Region
+            name="QLD"
+            price={getByKey(qPrice, "QLD1", "rrp")}
+            supply={getByKey(qNem, "QLD1", "supply")}
+            gen={getByKey(qNem, "QLD1", "gen")}
+            rooftop={getByKey(qRooftop, "QLD1", "power")}
+          />
 
-<div class="flex flex-row mt-4">
-  <!-- <DarkMode /> -->
-  <Heading tag="h3" class="bg-blue-300">NEM</Heading>
+          <Empty />
+          <Empty />
+          <Interconnector
+            name="NSW1-QLD1 and N-Q-MNSP1"
+            flow={parseInt(getByKey(qinterc, "NSW1-QLD1", "flow")) +
+              parseInt(getByKey(qinterc, "N-Q-MNSP1", "flow"))}
+          />
+
+          <Empty />
+          <Empty />
+          <Region
+            name="NSW"
+            price={getByKey(qPrice, "NSW1", "rrp")}
+            supply={getByKey(qNem, "NSW1", "supply")}
+            gen={getByKey(qNem, "NSW1", "gen")}
+            rooftop={getByKey(qRooftop, "NSW1", "power")}
+          />
+
+          <Empty />
+          <Empty />
+          <Interconnector
+            name="VIC1-NSW1"
+            flow={getByKey(qinterc, "VIC1-NSW1", "flow")}
+          />
+
+          <Region
+            name="SA"
+            price={getByKey(qPrice, "SA1", "rrp")}
+            supply={getByKey(qNem, "SA1", "supply")}
+            gen={getByKey(qNem, "SA1", "gen")}
+            rooftop={getByKey(qRooftop, "SA1", "power")}
+          />
+          <EwInterconnector
+            name="V-SA"
+            flow={parseInt(getByKey(qinterc, "V-SA", "flow")) +
+              parseInt(getByKey(qinterc, "V-S-MNSP1", "flow"))}
+          />
+          <Region
+            name="VIC"
+            price={getByKey(qPrice, "VIC1", "rrp")}
+            supply={getByKey(qNem, "VIC1", "supply")}
+            gen={getByKey(qNem, "VIC1", "gen")}
+            rooftop={getByKey(qRooftop, "VIC1", "power")}
+          />
+
+          <Empty />
+          <Empty />
+          <Interconnector
+            name="Basslink"
+            flow={getByKey(qinterc, "T-V-MNSP1", "flow")}
+          />
+
+          <Empty />
+          <Empty />
+          <Region
+            name="TAS"
+            price={getByKey(qPrice, "TAS1", "rrp")}
+            supply={getByKey(qNem, "TAS1", "supply")}
+            gen={getByKey(qNem, "TAS1", "gen")}
+            rooftop={getByKey(qRooftop, "TAS1", "power")}
+          />
+        </div>
+      {/if}
+    </div>
+  </TabItem>
+  <TabItem title="Fuel Type" on:click={dbg}>
+    <div class="flex flex-row mt-4">
+      <!-- <Heading tag="h3" class="bg-blue-300">NEM</Heading> -->
+      {#if qSQLresult}
+        <div id="plotlychart"></div>
+      {/if}
+    </div>
+  </TabItem>
+</Tabs>
+<div>
+  Data sourced from AEMO, BoM http://www.bom.gov.au/waterdata/ and wikipedia
+  https://en.wikipedia.org/wiki/List_of_dams_and_reservoirs_in_Australia and
+  related sources
 </div>
 
-{#if qNem && qinterc && qPrice}
-  <div class="nem-grid">
-    <div>Market time: <b>{marketTime}</b></div>
-    <Empty />
-    <Region
-      name="QLD"
-      price={getByKey(qPrice, "QLD1", "rrp")}
-      supply={getByKey(qNem, "QLD1", "supply")}
-      gen={getByKey(qNem, "QLD1", "gen")}
-    />
-
-    <Empty />
-    <Empty />
-    <Interconnector
-      name="NSW1-QLD1 and N-Q-MNSP1"
-      flow={parseInt(getByKey(qinterc, "NSW1-QLD1", "flow")) +
-        parseInt(getByKey(qinterc, "N-Q-MNSP1", "flow"))}
-    />
-
-    <Empty />
-    <Empty />
-    <Region
-      name="NSW"
-      price={getByKey(qPrice, "NSW1", "rrp")}
-      supply={getByKey(qNem, "NSW1", "supply")}
-      gen={getByKey(qNem, "NSW1", "gen")}
-    />
-
-    <Empty />
-    <Empty />
-    <Interconnector
-      name="VIC1-NSW1"
-      flow={getByKey(qinterc, "VIC1-NSW1", "flow")}
-    />
-
-    <Region
-      name="SA"
-      price={getByKey(qPrice, "SA1", "rrp")}
-      supply={getByKey(qNem, "SA1", "supply")}
-      gen={getByKey(qNem, "SA1", "gen")}
-    />
-    <EwInterconnector
-      name="V-SA"
-      flow={parseInt(getByKey(qinterc, "V-SA", "flow")) +
-        parseInt(getByKey(qinterc, "V-S-MNSP1", "flow"))}
-    />
-    <Region
-      name="VIC"
-      price={getByKey(qPrice, "VIC1", "rrp")}
-      supply={getByKey(qNem, "VIC1", "supply")}
-      gen={getByKey(qNem, "VIC1", "gen")}
-    />
-
-    <Empty />
-    <Empty />
-    <Interconnector
-      name="Basslink"
-      flow={getByKey(qinterc, "T-V-MNSP1", "flow")}
-    />
-
-    <Empty />
-    <Empty />
-    <Region
-      name="TAS"
-      price={getByKey(qPrice, "TAS1", "rrp")}
-      supply={getByKey(qNem, "TAS1", "supply")}
-      gen={getByKey(qNem, "TAS1", "gen")}
-    />
-  </div>
-
-  <div>
-    Data sourced from AEMO, BoM http://www.bom.gov.au/waterdata/ and wikipedia
-    https://en.wikipedia.org/wiki/List_of_dams_and_reservoirs_in_Australia and
-    related sources
-  </div>
-{/if}
-
-<div class="fixed top-0 right-0">
+<!-- <div class="fixed bottom-0 left-0">
   <button
     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
     on:click={doRefresh}>Refresh</button
   >
-</div>
-
-<div></div>
+</div> -->
 
 <style>
   .snowy-grid {
