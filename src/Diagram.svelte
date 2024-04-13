@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+
   import { Button, DarkMode, Heading } from "flowbite-svelte";
   import { Tabs, TabItem } from "flowbite-svelte";
 
@@ -26,9 +28,7 @@
   let qPrice: any = undefined;
   let qinterc: any = undefined;
   let qRooftop: any = undefined;
-  let qSQLresult: any = undefined;
-
-  let widgetList = []; // in case useful to support multiple charts one day and have to update them (copied from dashboard)
+  let qFuelType: any = undefined;
 
   let snowy2Gen: number = 0;
   let tumut1Gen: number = 0;
@@ -39,10 +39,26 @@
 
   let marketTime = "";
 
+  let widgetList = [];
+
   const getByKey = (arr: {}[], key: string, column: string): string =>
     arr.find((x) => x["ID"] === key)[column];
 
-  async function doRefresh() {
+  onMount(async () => {
+    await init();
+  });
+
+  export async function init() {
+    console.log("init called");
+    widgetList = [];
+    // await doGetHTML();
+    await performQueries(); // views and embedded SQL
+    console.log("adding widgets to HTML...");
+    // await addWidgetsToHTML();
+    // await doUpdateAll();
+  }
+
+  async function performQueries() {
     // console.log($dbN)
     qSnowy = await doFetch(
       $dbN,
@@ -52,7 +68,8 @@
 
     qDams = await doFetch(
       $dbN,
-      "select dam_id as ID, datetime, vol, acc_vol from DAM_VOLS order by datetime desc limit 5"
+      // "select dam_id as ID, datetime, vol, acc_vol from DAM_VOLS order by datetime desc limit 5"
+      "SELECT DAM_ID as ID, max(datetime) as datetime, vol, acc_vol FROM `DAM_VOLS` group by dam_id order by datetime desc"
     );
     console.log(qDams);
 
@@ -91,7 +108,7 @@
 
     marketTime = getByKey(qPrice, "QLD1", "settlementdate").slice(11, 16);
 
-    qSQLresult = await doFetch(
+    qFuelType = await doFetch(
       // -- {"height":400, "orientation":"h"}
       // (select max(settlementdate) from DISPATCH__PRICE)
       $dbN,
@@ -99,64 +116,112 @@
       Where settlementdate = (select max(settlementdate) from DISPATCH__PRICE) \
       group by 2,1 ORDER BY FIELD(_ft, 'Rooftop PV'), _ft, regionid`
     );
-    console.log(qSQLresult);
+    console.log(qFuelType);
+  }
 
-    await addChartWidget("#plotlychart", qSQLresult, "bar", {
+  async function addWidgetsToHTML() {
+    // see Dashboardpage for complete story
+    // could we make this dynamic loader a shareable compnent
+    await addChartWidget("#c1", qFuelType, "bar", {
       height: 800,
       width: 800,
       orientation: "h",
     });
-
-    // async function doChart() {
-    // fields = JSON.parse(v.fields);
-    // if (fields === null) {
-    //   fields = [];
-    // }
-    // fields.push({ fieldName: "id", visibility: false });
-    // console.log(fields);
-
-    // let sql_text = v.get_sql.replace("%d", p.id);
-    // let [opts, ...sql] = sql_text.split(/\r?\n/);
-    // if (opts.startsWith("-- {")) {
-    //   opts = JSON.parse(opts.slice(3));
-    //   sql = sql.join("\n");
-    // } else {
-    //   opts = {};
-    //   sql = sql_text;
-    // }
-
-    // console.log(sql);
-    // const datetime = $gOptions.datetime;
-    // sql = sql.replaceAll(":datetime:", datetime); // maybe this should also quote the datetime string
-    // sql = sql.replaceAll(":duid:", $gOptions.duid);
-    // console.log(sql);
-
-    // opts.datetime = datetime;
-    // console.log(opts);
-
-    // data = await doFetch($dbN, sql);
-
-    // addChartWidget("#plotlychart", qSQLresult, 'bar', '');
-    // }
   }
 
-  async function addChartWidget(s, data, chartType, opts) {
+  async function doUpdateAll() {
+    // TODO: need to update Snowy and NEM
+
+    // see dashboard page for complete story
+    // and we don't use updateChart...
+    
+    // updateChartWidget(
+    //   // addChartWidget( //
+    //   // this should be update but plotly draws into a div I give it and this makes it differnt
+    //   "#c1",
+    //   qFuelType,
+    //   "bar",
+    //   {
+    //     height: 800,
+    //     width: 800,
+    //     orientation: "h",
+    //   }
+    // );
+  }
+
+  async function doRefresh() {
+    await performQueries();
+    await doUpdateAll();
+  }
+
+  // async function doChart() {
+  // fields = JSON.parse(v.fields);
+  // if (fields === null) {
+  //   fields = [];
+  // }
+  // fields.push({ fieldName: "id", visibility: false });
+  // console.log(fields);
+
+  // let sql_text = v.get_sql.replace("%d", p.id);
+  // let [opts, ...sql] = sql_text.split(/\r?\n/);
+  // if (opts.startsWith("-- {")) {
+  //   opts = JSON.parse(opts.slice(3));
+  //   sql = sql.join("\n");
+  // } else {
+  //   opts = {};
+  //   sql = sql_text;
+  // }
+
+  // console.log(sql);
+  // const datetime = $gOptions.datetime;
+  // sql = sql.replaceAll(":datetime:", datetime); // maybe this should also quote the datetime string
+  // sql = sql.replaceAll(":duid:", $gOptions.duid);
+  // console.log(sql);
+
+  // opts.datetime = datetime;
+  // console.log(opts);
+
+  // data = await doFetch($dbN, sql);
+
+  // addChartWidget("#plotlychart", qFuelType, 'bar', '');
+  // }
+
+  function addChartWidget(s, data, chartType, opts) {
+    console.log("adding to widgetList..", s);
+    const w = new ChartWidget({
+      target: document.querySelector(s),
+      props: {
+        div: s,
+        data: data,
+        chartType: chartType,
+        opts: opts,
+      },
+    });
     widgetList.push({
       sel: s,
-      wgt: new ChartWidget({
-        target: document.querySelector(s),
-        props: {
-          div: s,
-          data: data,
-          chartType: chartType,
-          opts: opts,
-        },
-      }),
+      wgt: w,
+    });
+    console.log(widgetList);
+  }
+
+  // just to have it here aswell
+
+  function updateChartWidget(s, data, chartType, opts) {
+    console.log(widgetList);
+    let widget = widgetList.find((w) => w.sel == s)["wgt"];
+    console.log("found chart: ");
+    console.log(widget);
+    widget.$set({
+      div: s,
+      data: data,
+      chartType: chartType,
+      opts: opts,
     });
   }
 
   async function dbg() {
-    console.log("dbg:", qSQLresult);
+    console.log("widgetList:", widgetList);
+    console.log("qFuelType:", qFuelType);
   }
 </script>
 
@@ -430,8 +495,10 @@
   <TabItem title="Fuel Type" on:click={dbg}>
     <div class="flex flex-row mt-4">
       <!-- <Heading tag="h3" class="bg-blue-300">NEM</Heading> -->
-      {#if qSQLresult}
-        <div id="plotlychart"></div>
+      {#if qFuelType}
+        <div>
+          <div id="c1">chart here</div>
+        </div>
       {/if}
     </div>
   </TabItem>
