@@ -6,6 +6,12 @@
   export let supply: number = 0;
   export let gen: number = 0;
   export let rooftop: number = 0;
+  export let fossil: number = 0;
+  export let solar: number = 0;
+  export let wind: number = 0;
+  export let hydro: number = 0;
+  export let hstorage: number = 0;
+  export let bstorage: number = 0;
   // export let size: number = 10000; // capacity
   // export let currVol: number = 4000;
   // export let currAccessible: number = 2000;
@@ -24,11 +30,23 @@
 </script>
 
 <div class="region">
+  <div class="left">
   <span class="left"><b>{name}</b></span><span class="right">$ {price}</span>
   <br /><span class="left">Supply:</span><span class="right">{supply} MW</span> 
   <br />Generation: {gen} MW
   <br /><span>Rooftop:</span><span class="right">{rooftop} MW</span>
-
+  </div>
+  <div class="right">
+    <br />Fossil: {fossil} MW
+    <br />Solar: {solar} MW
+    <br />Wind: {wind} MW
+    <br />Hydro: {hydro} MW
+    <br />Hydro Storage: {hstorage} MW
+    <br />Battery Storage: {bstorage} MW
+  </div>
+  <div class="right">
+    <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </div>
   <Popover
     class="w-64 text-sm "
     title={name}

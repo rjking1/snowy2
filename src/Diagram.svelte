@@ -48,10 +48,14 @@
       return "0";
     }
 
-    console.log(key, column);
+    // console.log(key, column);
     const row = arr.find((x) => x["ID"] === key);
-    console.log(row);
-    return row[column];
+    // console.log(row);
+    if(row) {
+      return row[column];
+    }else {
+      return "0"
+    }
   }
 
   onMount(async () => {
@@ -109,6 +113,7 @@
     );
     console.log(qNem);
 
+    // can get this from fueltype query !!
     qRooftop = await doFetch(
       $dbN, // Where interval_datetime >= curdate()
       "select REGIONID as ID, INTERVAL_DATETIME, round(POWER,0) as power from ROOFTOP__ACTUAL order by interval_datetime desc limit 5"
@@ -127,9 +132,9 @@
       // -- {"height":400, "orientation":"h"}
       // (select max(settlementdate) from DISPATCH__PRICE)
       $dbN,
-      `select m.fueltype as _ft, m.regionid, sumSCADA as "mw#" from SCADA_BY_FUELTYPE m \
+      `select concat(m.regionid, m.fueltype) as ID, round(sumscada,0) as v from SCADA_BY_FUELTYPE m \
       Where settlementdate = (select max(settlementdate) from DISPATCH__PRICE) \
-      group by 2,1 ORDER BY FIELD(_ft, 'Rooftop PV'), _ft, regionid`
+      group by 1` // ORDER BY FIELD(_ft, 'Rooftop PV'), _ft, regionid`
     );
     console.log(qFuelType);
   }
@@ -308,7 +313,7 @@
           turbineSize="340"
           turbines="6"
           head="700"
-          maxFlow="6*50"
+          maxFlow="6 x 50"
         />
         <Empty />
         <Gen
@@ -371,7 +376,7 @@
           turbineSize="300"
           turbines="6"
           head="150"
-          maxFlow="6*188"
+          maxFlow="6 x 188"
         />
         <Empty />
         <Empty />
@@ -468,6 +473,12 @@
             supply={getByKey(qNem, "QLD1", "supply")}
             gen={getByKey(qNem, "QLD1", "gen")}
             rooftop={getByKey(qRooftop, "QLD1", "power")}
+            fossil={getByKey(qFuelType, "QLD1Black Coal", "v")}
+            solar={getByKey(qFuelType, "QLD1Solar", "v")}
+            wind={getByKey(qFuelType, "QLD1Wind", "v")}
+            hstorage={getByKey(qFuelType, "QLD1Hydro Storage", "v")}
+            bstorage={getByKey(qFuelType, "QLD1Battery Storage", "v")}
+            hydro={getByKey(qFuelType, "QLD1Hydro", "v")}
           />
 
           <Empty />
@@ -486,6 +497,7 @@
             supply={getByKey(qNem, "NSW1", "supply")}
             gen={getByKey(qNem, "NSW1", "gen")}
             rooftop={getByKey(qRooftop, "NSW1", "power")}
+            solar={getByKey(qFuelType, "NSW1Solar", "v")}
           />
 
           <Empty />
@@ -501,6 +513,7 @@
             supply={getByKey(qNem, "SA1", "supply")}
             gen={getByKey(qNem, "SA1", "gen")}
             rooftop={getByKey(qRooftop, "SA1", "power")}
+            solar={getByKey(qFuelType, "SA1Solar", "v")}
           />
           <EwInterconnector
             name="V-SA"
@@ -513,6 +526,7 @@
             supply={getByKey(qNem, "VIC1", "supply")}
             gen={getByKey(qNem, "VIC1", "gen")}
             rooftop={getByKey(qRooftop, "VIC1", "power")}
+            solar={getByKey(qFuelType, "VIC1Solar", "v")}
           />
 
           <Empty />
@@ -530,6 +544,7 @@
             supply={getByKey(qNem, "TAS1", "supply")}
             gen={getByKey(qNem, "TAS1", "gen")}
             rooftop={getByKey(qRooftop, "TAS1", "power")}
+            solar={getByKey(qFuelType, "TAS1Solar", "v")}
           />
         </div>
       {/if}
@@ -575,7 +590,7 @@
   .nem-grid {
     display: grid;
     /* grid-template-columns: 120px 60px 300px 60px 250px 110px 150px; */
-    grid-template-columns: 200px 150px 400px;
+    grid-template-columns: 500px 150px 500px;
     grid-template-rows: 150px;
     grid-auto-columns: 150px;
     grid-auto-rows: auto;

@@ -10,11 +10,12 @@
 
   $: currPercentage = Math.trunc((currVol * 100.0) / size).toString();
   $: currAccPercent = Math.trunc((currAccessible * 100.0) / size).toString();
-  $: currAccDelta = Math.trunc(delta).toString();
+  $: currAccDelta = Math.trunc(Math.abs(delta)).toString();
   $: currVolBal = Math.trunc(
     ((currVol - currAccessible) * 100.0) / size
   ).toString();
   $: lms = size > 1000000 ? "200" : size > 500000 ? "150" : size > 100000 ? "100" : "50";
+  $: arrow = delta > 0 ? "▲" : "▼"
 
   console.log(name, currVol, size, currPercentage);
 
@@ -43,7 +44,7 @@
     <br />Last reading on: {currDate}
     <br />Current volume: {currVol} ML
     <br /><span style="background-color: rgba(6, 181, 240, 0.925); width: 10px; height: 10px; color: white">Accessible volume: {currAccessible} ML</span>
-    <br />Accessible 24h change: {currAccDelta} ML
+    <br />24h change: <span style="background-color: rgba(6, 181, 6, 0.925); width: 10px; height: 10px; color: white">{currAccDelta} ML {arrow}</span>
     <br />Accessible percentage: {currAccPercent} %
   </Popover>
 </div>
