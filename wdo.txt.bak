@@ -97,17 +97,15 @@ tantangra is wrong reusing talbingo.  this is right to get mean, min and max
 
 http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=json&ts_path=w00205-410543/410543/StorageVolume/Pat6_C_B_1_DailyMean,w00205-410543/410543/StorageVolume/Pat6_C_B_1_DailyMin,w00205-410543/410543/StorageVolume/Pat6_C_B_1_DailyMax,&from=2024-04-01T00:00:00&to=2024-04-11T23:59:59&metadata=true&timezone=individual&md_returnfields=ts_shortname,ts_unitsymbol,parametertype_name&userId=pub
 
-change talbingo number and dates and data is correct (comma after DailyMean does not make a diff either way)
+change talbingo numberand dates and it's correct
 
-http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=json&ts_path=w00205-410543/410543/StorageVolume/Pat6_C_B_1_DailyMean&from=2024-04-01T00:00:00&to=2024-04-11T23:59:59&metadata=true&timezone=individual&md_returnfields=ts_shortname,ts_unitsymbol,parametertype_name&userId=pub
+http://www.bom.gov.au/waterdata/services?service=kisters&type=queryServices&request=getTimeseriesValues&datasource=0&format=json&ts_path=w00205-410543/410543/StorageVolume/Pat6_C_B_1_DailyMean,&from=2024-04-01T00:00:00&to=2024-04-11T23:59:59&metadata=true&timezone=individual&md_returnfields=ts_shortname,ts_unitsymbol,parametertype_name&userId=pub
 
 gives
 
 [{"ts_shortname":"Pat6_C_B_1_DailyMean","ts_unitsymbol":"Ml","parametertype_name":"Storage Volume","rows": "11","columns":"Timestamp,Value", "data": [["2024-04-01T00:00:00.000+10:00",62591.783],["2024-04-02T00:00:00.000+10:00",62454.191],["2024-04-03T00:00:00.000+10:00",62266.597],["2024-04-04T00:00:00.000+10:00",62093.382],["2024-04-05T00:00:00.000+10:00",61921.347],["2024-04-06T00:00:00.000+10:00",62172.670],["2024-04-07T00:00:00.000+10:00",62814.941],["2024-04-08T00:00:00.000+10:00",63011.830],["2024-04-09T00:00:00.000+10:00",63033.674],["2024-04-10T00:00:00.000+10:00",63230.010],["2024-04-11T00:00:00.000+10:00",63386.844]]}]
 
-where are we getting low values of 25000 from (and acc vol of 10000) in my importer. should be 63000 and 48000--->bad query to get vols by damfor max date !!!
-
-
+where are we getting low values of 25000 from (and acc vol of 10000). should be 63000 and 48000
 
 
 

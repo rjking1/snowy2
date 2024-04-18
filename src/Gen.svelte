@@ -22,7 +22,7 @@
   $: cls = gen == 0 ? "" : gen > 0 ? "cc" : "acc";
 
   // console.log(name, gen, cls);
-  const id = Math.trunc(Math.random() * 1000);
+  const id = Math.trunc(100000+Math.random() * 100000);
 </script>
 
 <div class="side-by-side">

@@ -5,10 +5,12 @@
   export let size: number = 10000; // capacity
   export let currVol: number = 4000;
   export let currAccessible: number = 2000;
+  export let delta: number = 2000;
   export let currDate = "01/01/2024";
 
   $: currPercentage = Math.trunc((currVol * 100.0) / size).toString();
   $: currAccPercent = Math.trunc((currAccessible * 100.0) / size).toString();
+  $: currAccDelta = Math.trunc(delta).toString();
   $: currVolBal = Math.trunc(
     ((currVol - currAccessible) * 100.0) / size
   ).toString();
@@ -16,7 +18,7 @@
 
   console.log(name, currVol, size, currPercentage);
 
-  const id = Math.trunc(Math.random() * 1000).toString();
+  const id = Math.trunc(200000+Math.random() * 100000);
 </script>
 
 <div>
@@ -41,6 +43,7 @@
     <br />Last reading on: {currDate}
     <br />Current volume: {currVol} ML
     <br /><span style="background-color: rgba(6, 181, 240, 0.925); width: 10px; height: 10px; color: white">Accessible volume: {currAccessible} ML</span>
+    <br />Accessible 24h change: {currAccDelta} ML
     <br />Accessible percentage: {currAccPercent} %
   </Popover>
 </div>

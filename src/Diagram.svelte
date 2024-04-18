@@ -21,6 +21,7 @@
   import Interconnector from "./Interconnector.svelte";
   import EwInterconnector from "./EWInterconnector.svelte";
   import ChartWidget from "./ChartWidget.svelte";
+  import NsArrow from "./NSArrow.svelte";
 
   let qDams: any = undefined;
   let qSnowy: any = undefined;
@@ -41,8 +42,17 @@
 
   let widgetList = [];
 
-  const getByKey = (arr: {}[], key: string, column: string): string =>
-    arr.find((x) => x["ID"] === key)[column];
+  function getByKey(arr: {}[], key: string, column: string): string {
+    if (arr == undefined) {
+      console.log("acc is undefined");
+      return "0";
+    }
+
+    console.log(key, column);
+    const row = arr.find((x) => x["ID"] === key);
+    console.log(row);
+    return row[column];
+  }
 
   onMount(async () => {
     await init();
@@ -66,13 +76,6 @@
     );
     console.log(qSnowy);
 
-    qDams = await doFetch(
-      $dbN,
-      // "select dam_id as ID, datetime, vol, acc_vol from DAM_VOLS order by datetime desc limit 5"
-      "SELECT DAM_ID as ID, max(datetime) as datetime, vol, acc_vol FROM `DAM_VOLS` group by dam_id order by datetime desc"
-    );
-    console.log(qDams);
-
     upptumutGen = parseInt(getByKey(qSnowy, "UPPTUMUT", "v"));
     tumut1Gen = Math.round((upptumutGen * 330) / 616);
     tumut2Gen = Math.round((upptumutGen * 286) / 616);
@@ -80,6 +83,18 @@
       parseInt(getByKey(qSnowy, "TUMUT3", "v")) +
       parseInt(getByKey(qSnowy, "SNOWYP", "v"));
     bloweringGen = parseInt(getByKey(qSnowy, "BLOWERNG", "v"));
+
+    try {
+      qDams = await doFetch(
+        $dbN,
+          `SELECT dam_id as ID, datetime, vol, acc_vol, 
+          (select v1.acc_vol - v3.acc_vol from DAM_VOLS v3 where v3.dam_id=v1.dam_id and v3.datetime + interval 1 day = v1.datetime) as delta 
+          FROM DAM_VOLS v1 where (dam_id, datetime) in (select dam_id, max(datetime) as datetime from DAM_VOLS group by dam_id)`
+        );
+    } catch (error) {
+      console.log(error);
+    }
+    console.log(qDams);
 
     qPrice = await doFetch(
       $dbN,
@@ -131,10 +146,8 @@
 
   async function doUpdateAll() {
     // TODO: need to update Snowy and NEM
-
     // see dashboard page for complete story
     // and we don't use updateChart...
-    
     // updateChartWidget(
     //   // addChartWidget( //
     //   // this should be update but plotly draws into a div I give it and this makes it differnt
@@ -231,8 +244,31 @@
 >
   <Button color="light" on:click={doRefresh}>Refresh</Button>
   <TabItem open title="Snowy Dams">
-    {#if qSnowy && qDams}
+    {#if qDams && qSnowy}
       <div class="snowy-grid">
+        <Empty />
+        <Empty />
+        <Dam
+          name="Burrinjuck"
+          currDate={getByKey(qDams, "BUR", "datetime")}
+          currVol={parseInt(getByKey(qDams, "BUR", "vol"))}
+          currAccessible={parseInt(getByKey(qDams, "BUR", "acc_vol"))}
+          delta={parseInt(getByKey(qDams, "BUR", "delta"))}
+          size="1026000"
+        />
+        <Empty />
+        <Empty />
+        <Empty />
+        <Empty />
+
+        <Empty />
+        <Empty />
+        <NsArrow gen={-1} />
+        <Empty />
+        <Empty />
+        <Empty />
+        <Empty />
+
         <Empty />
         <Empty />
         <Dam
@@ -240,6 +276,7 @@
           currDate={getByKey(qDams, "TAN", "datetime")}
           currVol={parseInt(getByKey(qDams, "TAN", "vol"))}
           currAccessible={parseInt(getByKey(qDams, "TAN", "acc_vol"))}
+          delta={parseInt(getByKey(qDams, "TAN", "delta"))}
           size="255000"
         />
         <EArrow gen={1} />
@@ -248,6 +285,7 @@
           currDate={getByKey(qDams, "EUC", "datetime")}
           currVol={parseInt(getByKey(qDams, "EUC", "vol"))}
           currAccessible={parseInt(getByKey(qDams, "EUC", "acc_vol"))}
+          delta={parseInt(getByKey(qDams, "EUC", "delta"))}
           size="4798400"
         />
         <EArrow gen={1} />
@@ -300,6 +338,7 @@
           currDate={getByKey(qDams, "TAL", "datetime")}
           currVol={parseInt(getByKey(qDams, "TAL", "vol"))}
           currAccessible={parseInt(getByKey(qDams, "TAL", "acc_vol"))}
+          delta={parseInt(getByKey(qDams, "TAL", "delta"))}
           size="921400"
         />
         <WArrow gen={tumut2Gen} />
@@ -354,6 +393,7 @@
           currDate={getByKey(qDams, "JOU", "datetime")}
           currVol={parseInt(getByKey(qDams, "JOU", "vol"))}
           currAccessible={parseInt(getByKey(qDams, "JOU", "acc_vol"))}
+          delta={parseInt(getByKey(qDams, "JOU", "delta"))}
           size="43542"
         />
         <EArrow gen={1} />
@@ -362,6 +402,7 @@
           currDate={getByKey(qDams, "BLO", "datetime")}
           currVol={parseInt(getByKey(qDams, "BLO", "vol"))}
           currAccessible={parseInt(getByKey(qDams, "BLO", "acc_vol"))}
+          delta={parseInt(getByKey(qDams, "BLO", "delta"))}
           size="1628000"
         />
         <Empty />
@@ -410,6 +451,8 @@
         <Empty />
         <Empty />
       </div>
+    {:else}
+      <div>querying...</div>
     {/if}
   </TabItem>
   <TabItem title="NEM">
@@ -521,9 +564,7 @@
     display: grid;
     /* grid-template-columns: 120px 60px 300px 60px 250px 110px 150px; */
     grid-template-columns: 10% 8% 25% 7% 25% 10% 15%;
-    grid-template-rows: 150px;
-    grid-auto-columns: 150px;
-    grid-auto-rows: auto;
+    grid-auto-rows: 110px;
     grid-auto-flow: row;
     justify-content: center;
     justify-items: center;
