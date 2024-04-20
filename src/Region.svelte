@@ -32,8 +32,9 @@
 <div class="region">
   <div class="left">
   <span class="left"><b>{name}</b></span><span class="right" style="background-color: navajowhite"><b>$ {price}</b></span>
-  <br /><span>Supply:</span><span class="right" style="background-color: beige">{supply} MW</span>
-  <br /><span>Generation:&nbsp;</span><span class="right" style="background-color: lavenderblush">{gen} MW</span>
+  <br />Grid demand /
+  <br /><span>Supply:</span><span class="right" style="background-color: lightcyan;">{supply} MW</span>
+  <br />Off-grid demand /
   <br /><span>Rooftop:</span><span class="right" style="background-color: rgba(240, 230, 140, 0.6);">{rooftop} MW</span>
   </div>
   <div class="right">
@@ -49,6 +50,8 @@
     {#if bstorage}
     <br /><span>Battery Storage:&nbsp;</span><span class="right" style="background-color: rgba(181, 6, 286, 0.225);">{bstorage} MW</span>
     {/if}
+    <br /><hr />
+    <span>Generation:&nbsp;</span><span class="right" style="background-color: lavenderblush">{gen} MW</span>
   </div>
   <div class="right">
     <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
