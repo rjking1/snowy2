@@ -463,7 +463,7 @@
   <TabItem title="NEM">
     <div class="flex flex-row mt-4">
       <!-- <Heading tag="h3" class="bg-blue-300">NEM</Heading> -->
-      {#if qNem && qinterc && qPrice && qRooftop}
+      {#if qNem && qinterc && qPrice && qRooftop && qFuelType}
         <div class="nem-grid">
           <div>Market time: <b>{marketTime}</b></div>
           <Empty />
@@ -473,12 +473,12 @@
             supply={getByKey(qNem, "QLD1", "supply")}
             gen={getByKey(qNem, "QLD1", "gen")}
             rooftop={getByKey(qRooftop, "QLD1", "power")}
-            fossil={getByKey(qFuelType, "QLD1Black Coal", "v")}
+            fossil={Math.trunc(getByKey(qFuelType, "QLD1Black Coal", "v")) + Math.trunc(getByKey(qFuelType, "QLD1Gas", "v")) }
             solar={getByKey(qFuelType, "QLD1Solar", "v")}
             wind={getByKey(qFuelType, "QLD1Wind", "v")}
+            hydro={getByKey(qFuelType, "QLD1Hydro", "v")}
             hstorage={getByKey(qFuelType, "QLD1Hydro Storage", "v")}
             bstorage={getByKey(qFuelType, "QLD1Battery Storage", "v")}
-            hydro={getByKey(qFuelType, "QLD1Hydro", "v")}
           />
 
           <Empty />
@@ -497,7 +497,12 @@
             supply={getByKey(qNem, "NSW1", "supply")}
             gen={getByKey(qNem, "NSW1", "gen")}
             rooftop={getByKey(qRooftop, "NSW1", "power")}
+            fossil={Math.trunc(getByKey(qFuelType, "NSW1Black Coal", "v")) + Math.trunc(getByKey(qFuelType, "NSW1Gas", "v")) }
             solar={getByKey(qFuelType, "NSW1Solar", "v")}
+            wind={getByKey(qFuelType, "NSW1Wind", "v")}
+            hydro={getByKey(qFuelType, "NSW1Hydro", "v")}
+            hstorage={getByKey(qFuelType, "NSW1Hydro Storage", "v")}
+            bstorage={getByKey(qFuelType, "NSW1Battery Storage", "v")}
           />
 
           <Empty />
@@ -513,7 +518,10 @@
             supply={getByKey(qNem, "SA1", "supply")}
             gen={getByKey(qNem, "SA1", "gen")}
             rooftop={getByKey(qRooftop, "SA1", "power")}
+            fossil={Math.trunc(getByKey(qFuelType, "SA1Black Coal", "v")) + Math.trunc(getByKey(qFuelType, "SA1Gas", "v")) }
             solar={getByKey(qFuelType, "SA1Solar", "v")}
+            wind={getByKey(qFuelType, "SA1Wind", "v")}
+            bstorage={getByKey(qFuelType, "SA1Battery Storage", "v")}
           />
           <EwInterconnector
             name="V-SA"
@@ -526,7 +534,11 @@
             supply={getByKey(qNem, "VIC1", "supply")}
             gen={getByKey(qNem, "VIC1", "gen")}
             rooftop={getByKey(qRooftop, "VIC1", "power")}
+            fossil={Math.trunc(getByKey(qFuelType, "VIC1Black Coal", "v")) + Math.trunc(getByKey(qFuelType, "VIC1Gas", "v")) }
             solar={getByKey(qFuelType, "VIC1Solar", "v")}
+            wind={getByKey(qFuelType, "VIC1Wind", "v")}
+            hydro={getByKey(qFuelType, "VIC1Hydro", "v")}
+            bstorage={getByKey(qFuelType, "VIC1Battery Storage", "v")}
           />
 
           <Empty />
@@ -544,7 +556,11 @@
             supply={getByKey(qNem, "TAS1", "supply")}
             gen={getByKey(qNem, "TAS1", "gen")}
             rooftop={getByKey(qRooftop, "TAS1", "power")}
+            fossil={Math.trunc(getByKey(qFuelType, "TAS1Black Coal", "v")) + Math.trunc(getByKey(qFuelType, "TAS1Gas", "v")) }
             solar={getByKey(qFuelType, "TAS1Solar", "v")}
+            wind={getByKey(qFuelType, "TAS1Wind", "v")}
+            hydro={getByKey(qFuelType, "TAS1Hydro", "v")}
+            bstorage={getByKey(qFuelType, "TAS1Battery Storage", "v")}
           />
         </div>
       {/if}

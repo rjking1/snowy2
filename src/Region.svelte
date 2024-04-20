@@ -31,18 +31,24 @@
 
 <div class="region">
   <div class="left">
-  <span class="left"><b>{name}</b></span><span class="right">$ {price}</span>
-  <br /><span class="left">Supply:</span><span class="right">{supply} MW</span> 
-  <br />Generation: {gen} MW
-  <br /><span>Rooftop:</span><span class="right">{rooftop} MW</span>
+  <span class="left"><b>{name}</b></span><span class="right" style="background-color: navajowhite"><b>$ {price}</b></span>
+  <br /><span>Supply:</span><span class="right" style="background-color: beige">{supply} MW</span>
+  <br /><span>Generation:&nbsp;</span><span class="right" style="background-color: lavenderblush">{gen} MW</span>
+  <br /><span>Rooftop:</span><span class="right" style="background-color: rgba(240, 230, 140, 0.6);">{rooftop} MW</span>
   </div>
   <div class="right">
-    <br />Fossil: {fossil} MW
-    <br />Solar: {solar} MW
-    <br />Wind: {wind} MW
-    <br />Hydro: {hydro} MW
-    <br />Hydro Storage: {hstorage} MW
-    <br />Battery Storage: {bstorage} MW
+    <span>Fossil:</span><span class="right" style="background-color: rgba(60, 60, 60, 0.15);">{fossil} MW</span>
+    <br /><span>Solar:</span><span class="right" style="background-color: rgba(240, 230, 140, 0.6);">{solar} MW</span>
+    <br /><span>Wind:</span><span class="right" style="background-color: rgba(6, 281, 6, 0.225);">{wind} MW</span>
+    {#if hydro}
+    <br /><span>Hydro:</span><span class="right" style="background-color: rgba(6, 181, 286, 0.425);">{hydro} MW</span>
+    {/if}
+    {#if hstorage}
+    <br /><span>Hydro Storage:&nbsp;</span><span class="right" style="background-color: rgba(6, 181, 286, 0.2);">{hstorage} MW</span>
+    {/if}
+    {#if bstorage}
+    <br /><span>Battery Storage:&nbsp;</span><span class="right" style="background-color: rgba(181, 6, 286, 0.225);">{bstorage} MW</span>
+    {/if}
   </div>
   <div class="right">
     <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

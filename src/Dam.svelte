@@ -16,6 +16,7 @@
   ).toString();
   $: lms = size > 1000000 ? "200" : size > 500000 ? "150" : size > 100000 ? "100" : "50";
   $: arrow = delta > 0 ? "▲" : "▼"
+  $: arrowColour = delta > 0 ? "teal": "salmon"
 
   console.log(name, currVol, size, currPercentage);
 
@@ -44,7 +45,7 @@
     <br />Last reading on: {currDate}
     <br />Current volume: {currVol} ML
     <br /><span style="background-color: rgba(6, 181, 240, 0.925); width: 10px; height: 10px; color: white">Accessible volume: {currAccessible} ML</span>
-    <br />24h change: <span style="background-color: rgba(6, 181, 6, 0.925); width: 10px; height: 10px; color: white">{currAccDelta} ML {arrow}</span>
+    <br />24h change: <span style="background-color: {arrowColour}; width: 10px; height: 10px; color: white">{currAccDelta} ML {arrow}</span>
     <br />Accessible percentage: {currAccPercent} %
   </Popover>
 </div>
