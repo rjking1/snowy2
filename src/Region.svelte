@@ -17,9 +17,7 @@
   let renew: number = parseInt(solar) + parseInt(wind) + parseInt(bstorage) + parseInt(rooftop)
   if(hydro) renew += parseInt(hydro)
   if(hstorage) renew += parseInt(hstorage)
-  console.log(name , renew, parseInt(gen) + parseInt(rooftop))
-  // const genColour = (renew > fossil) ? "green" : "indianred"
-  const renewPercent= Math.trunc(renew * 100.0 / (parseInt(gen) + parseInt(rooftop)))
+  const renewPercent= Math.trunc(100.0 * (1.0 - parseInt(fossil) / (parseInt(gen) + parseInt(rooftop))))
   const genColour = (renewPercent > 50) ? "green" : "indianred"
 
   const id = Math.trunc(Math.random() * 1000).toString();
