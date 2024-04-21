@@ -518,7 +518,7 @@
             supply={getByKey(qNem, "SA1", "supply")}
             gen={getByKey(qNem, "SA1", "gen")}
             rooftop={getByKey(qRooftop, "SA1", "power")}
-            fossil={Math.trunc(getByKey(qFuelType, "SA1Black Coal", "v")) + Math.trunc(getByKey(qFuelType, "SA1Gas", "v")) }
+            fossil={getByKey(qFuelType, "SA1Gas", "v")}
             solar={getByKey(qFuelType, "SA1Solar", "v")}
             wind={getByKey(qFuelType, "SA1Wind", "v")}
             bstorage={getByKey(qFuelType, "SA1Battery Storage", "v")}
@@ -534,7 +534,7 @@
             supply={getByKey(qNem, "VIC1", "supply")}
             gen={getByKey(qNem, "VIC1", "gen")}
             rooftop={getByKey(qRooftop, "VIC1", "power")}
-            fossil={Math.trunc(getByKey(qFuelType, "VIC1Black Coal", "v")) + Math.trunc(getByKey(qFuelType, "VIC1Gas", "v")) }
+            fossil={Math.trunc(getByKey(qFuelType, "VIC1Brown Coal", "v")) + Math.trunc(getByKey(qFuelType, "VIC1Gas", "v")) }
             solar={getByKey(qFuelType, "VIC1Solar", "v")}
             wind={getByKey(qFuelType, "VIC1Wind", "v")}
             hydro={getByKey(qFuelType, "VIC1Hydro", "v")}
@@ -556,7 +556,7 @@
             supply={getByKey(qNem, "TAS1", "supply")}
             gen={getByKey(qNem, "TAS1", "gen")}
             rooftop={getByKey(qRooftop, "TAS1", "power")}
-            fossil={Math.trunc(getByKey(qFuelType, "TAS1Black Coal", "v")) + Math.trunc(getByKey(qFuelType, "TAS1Gas", "v")) }
+            fossil={getByKey(qFuelType, "TAS1Gas", "v")}
             solar={getByKey(qFuelType, "TAS1Solar", "v")}
             wind={getByKey(qFuelType, "TAS1Wind", "v")}
             hydro={getByKey(qFuelType, "TAS1Hydro", "v")}

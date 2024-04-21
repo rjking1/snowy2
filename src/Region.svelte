@@ -12,46 +12,43 @@
   export let hydro: number = 0;
   export let hstorage: number = 0;
   export let bstorage: number = 0;
-  // export let size: number = 10000; // capacity
-  // export let currVol: number = 4000;
-  // export let currAccessible: number = 2000;
-  // export let currDate = "01/01/2024";
 
-  // $: currPercentage = Math.trunc((currVol * 100.0) / size).toString();
-  // $: currAccPercent = Math.trunc((currAccessible * 100.0) / size).toString();
-  // $: currVolBal = Math.trunc(
-  //   ((currVol - currAccessible) * 100.0) / size
-  // ).toString();
-  // $: lms = size > 1000000 ? "200" : size > 500000 ? "150" : size > 100000 ? "100" : "50";
-
-  // console.log(name, currVol, size, currPercentage);
+  // calc red or green depending on % renewables
+  let renew: number = parseInt(solar) + parseInt(wind) + parseInt(bstorage) + parseInt(rooftop)
+  if(hydro) renew += parseInt(hydro)
+  if(hstorage) renew += parseInt(hstorage)
+  console.log(name , renew, parseInt(gen) + parseInt(rooftop))
+  // const genColour = (renew > fossil) ? "green" : "indianred"
+  const renewPercent= Math.trunc(renew * 100.0 / (parseInt(gen) + parseInt(rooftop)))
+  const genColour = (renewPercent > 50) ? "green" : "indianred"
 
   const id = Math.trunc(Math.random() * 1000).toString();
 </script>
 
-<div class="region">
+<div class="region" id="id{id}">
   <div class="left">
   <span class="left"><b>{name}</b></span><span class="right" style="background-color: navajowhite"><b>$ {price}</b></span>
   <br />Grid demand /
-  <br /><span>Supply:</span><span class="right" style="background-color: lightcyan;">{supply} MW</span>
-  <br />Off-grid demand /
-  <br /><span>Rooftop:</span><span class="right" style="background-color: rgba(240, 230, 140, 0.6);">{rooftop} MW</span>
+  <br /><span>Supply:</span><span class="right">&nbsp;MW</span><span class="right" style="background-color: blue; color:white;">&nbsp;{supply}&nbsp;</span>
+
+  <br /><span>Rooftop PV:&nbsp;</span><span class="right">&nbsp;MW</span><span class="right" style="background-color: rgba(240, 230, 140, 0.9);">{rooftop}&nbsp;</span>
+  <br /><span>Renewable %:&nbsp;</span><span class="right">&nbsp;%&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="right" style="background-color:{genColour}; color:white;">&nbsp;{renewPercent}&nbsp;</span>
   </div>
   <div class="right">
-    <span>Fossil:</span><span class="right" style="background-color: rgba(60, 60, 60, 0.15);">{fossil} MW</span>
-    <br /><span>Solar:</span><span class="right" style="background-color: rgba(240, 230, 140, 0.6);">{solar} MW</span>
-    <br /><span>Wind:</span><span class="right" style="background-color: rgba(6, 281, 6, 0.225);">{wind} MW</span>
+    <span>Fossil:</span><span class="right">&nbsp;MW</span><span class="right" style="background-color: rgba(60, 60, 60, 0.15);">{fossil}</span>
+    <br /><span>Solar:</span><span class="right">&nbsp;MW</span><span class="right" style="background-color: rgba(240, 230, 140, 0.9);">{solar}</span>
+    <br /><span>Wind:</span><span class="right">&nbsp;MW</span><span class="right" style="background-color: rgba(6, 281, 6, 0.225);">{wind}</span>
     {#if hydro}
-    <br /><span>Hydro:</span><span class="right" style="background-color: rgba(6, 181, 286, 0.425);">{hydro} MW</span>
+    <br /><span>Hydro:</span><span class="right">&nbsp;MW</span><span class="right" style="background-color: rgba(6, 181, 286, 0.425);">{hydro}</span>
     {/if}
     {#if hstorage}
-    <br /><span>Hydro Storage:&nbsp;</span><span class="right" style="background-color: rgba(6, 181, 286, 0.2);">{hstorage} MW</span>
+    <br /><span>Hydro Storage:&nbsp;</span><span class="right">&nbsp;MW</span><span class="right" style="background-color: rgba(6, 181, 286, 0.2);">{hstorage}</span>
     {/if}
     {#if bstorage}
-    <br /><span>Battery Storage:&nbsp;</span><span class="right" style="background-color: rgba(181, 6, 286, 0.225);">{bstorage} MW</span>
+    <br /><span>Battery Storage:&nbsp;</span><span class="right">&nbsp;MW</span><span class="right" style="background-color: rgba(181, 6, 286, 0.225);">{bstorage}</span>
     {/if}
     <br /><hr />
-    <span>Generation:&nbsp;</span><span class="right" style="background-color: lavenderblush">{gen} MW</span>
+    <span>Generation:&nbsp;</span><span class="right">&nbsp;MW</span><span class="right" style="background-color: blue; color:white;">&nbsp;{gen}&nbsp;</span>
   </div>
   <div class="right">
     <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
